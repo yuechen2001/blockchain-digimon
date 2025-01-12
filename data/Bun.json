@@ -1,0 +1,12 @@
+{
+  "id": 7,
+  "name": "Bun",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Bun.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [],
+  "fields": []
+}
