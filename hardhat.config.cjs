@@ -7,13 +7,16 @@ const { MORALIS_NODE_URL, PRIVATE_KEY } = process.env;
 
 module.exports = {
     solidity: "0.8.28",
-    defaultNetwork: "sepolia",
+    // defaultNetwork: "sepolia",
     paths: {
         sources: "./contracts",
         artifacts: "./artifacts",
     },
     networks: {
-        hardhat: {},
+        hardhat: {
+            gasPrice: 0,
+            initialBaseFeePerGas: 0,
+        },
         sepolia: {
             url: MORALIS_NODE_URL,
             accounts: [
