@@ -1,22 +1,31 @@
+import hardhatPkg from 'hardhat';
+const { ethers } = hardhatPkg;
+
+import chaiPkg from 'chai';
+const { expect } = chaiPkg;
+
+const owner = '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC';
+const user = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+
 describe("DigimonMarketplace", function () {
-  it("Should mint and list a Digimon", async function () {
-    // const [owner, addr1, addr2] = await ethers.getSigners();
+  it("Should allow user to mint a Digimon", async function () {
 
     const DigimonMarketplace = await ethers.getContractFactory("DigimonMarketplace");
-    const digimonMarketplace = await DigimonMarketplace.deploy();
+    const digimonMarketplace = await DigimonMarketplace.deploy(owner);
+    await digimonMarketplace.waitForDeployment();
 
-    await digimonMarketplace.deployed();
+    console.log("DigimonMarketplace deployed to:", digimonMarketplace.address);
+    const metadataURI = '../data/Agumon.json';
 
-    const digimon = await digimonMarketplace.mintDigimon("https://example.com/agumon.json");
-    await digimon.wait();
+    let balance = await digimonMarketplace.balanceOf(user);
+    expect(balance).to.equal(0);
 
-    expect(await digimonMarketplace.ownerOf(0)).to.equal(owner.address);
+    const newlyMinted = await digimonMarketplace.payToMint(user, metadataURI, { value: ethers.parseEther('0.05') });
+    await newlyMinted.wait();
 
-    await digimonMarketplace.listDigimon(0, ethers.utils.parseEther("1.0"));
-    const listing = await digimonMarketplace.getListing(0);
-    expect(listing.price).to.equal(ethers.utils.parseEther("1.0"));
+    balance = await digimonMarketplace.balanceOf(user);
+    expect(balance).to.equal(1);
 
-    await digimonMarketplace.connect(addr1).buyDigimon(0, { value: ethers.utils.parseEther("1.0") });
-    expect(await digimonMarketplace.ownerOf(0)).to.equal(addr1.address);
+    expect(await digimonMarketplace.isContentOwned(metadataURI)).to.equal(true);
   });
 });

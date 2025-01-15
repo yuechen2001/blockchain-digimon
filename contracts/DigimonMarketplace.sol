@@ -1,72 +1,65 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+// Compatible with OpenZeppelin Contracts ^5.0.0
+pragma solidity ^0.8.22;
 
-contract DigimonMarketplace {
-    // Events for logging
-    event DigimonMinted(address indexed owner, uint256 tokenId, string tokenURI);
-    event DigimonListed(uint256 tokenId, address indexed seller, uint256 price);
-    event DigimonBought(uint256 tokenId, address indexed buyer, uint256 price);
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-    struct Digimon {
-        uint256 id;
-        string tokenURI; // Metadata for Digimon (e.g., evolution stage, type, abilities)
-        address owner;
+contract DigimonMarketplace is ERC721, ERC721URIStorage, Ownable {
+    uint256 private _tokenIdCounter;
+
+    mapping(string => uint8) existingURIs;
+
+    constructor(address initialOwner)
+        ERC721("DigimonMarketplace", "DGM")
+        Ownable(initialOwner)
+    {}
+
+    function safeMint(address to, string memory uri) public onlyOwner {
+        uint256 tokenId = _tokenIdCounter++;
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
     }
 
-    struct Listing {
-        address seller;
-        uint256 price;
+    function isContentOwned(string memory uri) public view returns (bool) {
+        return existingURIs[uri] == 1;
     }
 
-    // State variables
-    uint256 private _digimonCounter;
-    mapping(uint256 => Digimon) private _digimons;
-    mapping(uint256 => Listing) private _listings;
+    function payToMint(
+        address recipient,
+        string memory metadataURI
+    ) public payable returns (uint256) {
+        require(existingURIs[metadataURI] != 1, 'NFT already minted!');
+        require (msg.value >= 0.05 ether, 'Need to pay up!');
 
-    // Mint a new Digimon
-    function mintDigimon(string memory tokenURI) external {
-        uint256 tokenId = ++_digimonCounter; // Increment Digimon ID
-        _digimons[tokenId] = Digimon(tokenId, tokenURI, msg.sender); // Create the Digimon
-        emit DigimonMinted(msg.sender, tokenId, tokenURI); // Emit event
+        uint256 newItemId = _tokenIdCounter;
+        _tokenIdCounter++;
+        existingURIs[metadataURI] = 1;
+
+        _mint(recipient, newItemId);
+        _setTokenURI(newItemId, metadataURI);
+
+        return newItemId;
     }
 
-    // List a Digimon for sale
-    function listDigimon(uint256 tokenId, uint256 price) external {
-        require(_digimons[tokenId].owner == msg.sender, "Only the owner can list this Digimon");
-        require(price > 0, "Price must be greater than zero");
+    // The following functions are overrides required by Solidity.
 
-        _listings[tokenId] = Listing(msg.sender, price); // Add listing
-        emit DigimonListed(tokenId, msg.sender, price); // Emit event
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
     }
 
-    // Buy a listed Digimon
-    function buyDigimon(uint256 tokenId) external payable {
-        Listing memory listing = _listings[tokenId];
-        require(listing.price > 0, "This Digimon is not for sale");
-        require(msg.value >= listing.price, "Insufficient payment");
-
-        // Transfer funds to seller
-        payable(listing.seller).transfer(msg.value);
-
-        // Transfer ownership
-        _digimons[tokenId].owner = msg.sender;
-
-        // Remove the listing
-        delete _listings[tokenId];
-
-        emit DigimonBought(tokenId, msg.sender, msg.value); // Emit event
-    }
-
-    // View functions
-    function getDigimon(uint256 tokenId) external view returns (Digimon memory) {
-        return _digimons[tokenId];
-    }
-
-    function getListing(uint256 tokenId) external view returns (Listing memory) {
-        return _listings[tokenId];
-    }
-
-    function ownerOf(uint256 tokenId) external view returns (address) {
-        return _digimons[tokenId].owner;
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
