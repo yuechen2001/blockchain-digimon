@@ -1,0 +1,32 @@
+{
+  "id": 5,
+  "name": "Birdramon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Birdramon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 1,
+      "attribute": "Data"
+    },
+    {
+      "id": 4,
+      "attribute": "Vaccine"
+    }
+  ],
+  "fields": [
+    {
+      "id": 2,
+      "field": "Nature Spirits",
+      "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
+    },
+    {
+      "id": 7,
+      "field": "Wind Guardians",
+      "image": "https://digi-api.com/images/etc/fields/Wind_Guardians.png"
+    }
+  ]
+}

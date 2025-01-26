@@ -1,0 +1,48 @@
+{
+  "id": 1,
+  "name": "Agumon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Agumon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 4,
+      "attribute": "Vaccine"
+    }
+  ],
+  "fields": [
+    {
+      "id": 8,
+      "field": "Deep Savers",
+      "image": "https://digi-api.com/images/etc/fields/Deep_Savers.png"
+    },
+    {
+      "id": 5,
+      "field": "Dragon's Roar",
+      "image": "https://digi-api.com/images/etc/fields/Dragon's_Roar.png"
+    },
+    {
+      "id": 1,
+      "field": "Metal Empire",
+      "image": "https://digi-api.com/images/etc/fields/Metal_Empire.png"
+    },
+    {
+      "id": 2,
+      "field": "Nature Spirits",
+      "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
+    },
+    {
+      "id": 3,
+      "field": "Nightmare Soldiers",
+      "image": "https://digi-api.com/images/etc/fields/Nightmare_Soldiers.png"
+    },
+    {
+      "id": 9,
+      "field": "Virus Busters",
+      "image": "https://digi-api.com/images/etc/fields/Virus_Busters.png"
+    }
+  ]
+}

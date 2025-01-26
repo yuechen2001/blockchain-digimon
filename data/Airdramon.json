@@ -1,0 +1,33 @@
+{
+  "id": 2,
+  "name": "Airdramon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Airdramon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 4,
+      "attribute": "Vaccine"
+    }
+  ],
+  "fields": [
+    {
+      "id": 5,
+      "field": "Dragon's Roar",
+      "image": "https://digi-api.com/images/etc/fields/Dragon's_Roar.png"
+    },
+    {
+      "id": 2,
+      "field": "Nature Spirits",
+      "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
+    },
+    {
+      "id": 7,
+      "field": "Wind Guardians",
+      "image": "https://digi-api.com/images/etc/fields/Wind_Guardians.png"
+    }
+  ]
+}
