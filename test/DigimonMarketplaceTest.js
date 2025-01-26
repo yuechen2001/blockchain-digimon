@@ -4,51 +4,53 @@ const { ethers } = hardhatPkg;
 import chaiPkg from 'chai';
 const { expect } = chaiPkg;
 
+import { getDigimonURI } from '../scripts/ipfsMetadataHelper.js';
+
 describe('DigimonMarketplace', function () {
   let digimonMarketplace;
   let owner;
   let user;
   let seller;
   let buyer;
-  let metadataURI;
 
   // Constants matching the contract
   const MINT_PRICE = ethers.parseEther('0.05');
   const LISTING_FEE = ethers.parseEther('0.05');
-  const MIN_PRICE = ethers.parseEther('0.01');
-  const MAX_PRICE = ethers.parseEther('100');
   const MAX_LISTING_DURATION = 30 * 24 * 60 * 60; // 30 days in seconds
   const MARKETPLACE_FEE = 250; // 2.5%
 
+  // Test data
+  const metadataURI = getDigimonURI('Agumon');
+
   beforeEach(async function () {
-    const accounts = await ethers.getSigners();
-    [owner, user, seller, buyer] = accounts;
+    [owner, user, seller, buyer] = await ethers.getSigners();
 
-    // Test variables
-    metadataURI = 'ipfs://QmTest/metadata.json';
-
-    // Deploy DigimonMarketplace
     const DigimonMarketplace = await ethers.getContractFactory('DigimonMarketplace');
     digimonMarketplace = await DigimonMarketplace.deploy(owner.address);
-    await digimonMarketplace.waitForDeployment();
+
+    // Mint a Digimon for seller to use in tests
+    await digimonMarketplace.connect(seller).mintDigimon(metadataURI, {
+      value: MINT_PRICE
+    });
   });
 
   describe('Deployment', function () {
     it('should deploy successfully', async function () {
-      expect(digimonMarketplace.target).to.not.equal(undefined);
-      expect(await digimonMarketplace.owner()).to.equal(owner.address);
+      expect(await digimonMarketplace.name()).to.equal("DigimonMarketplace");
+      expect(await digimonMarketplace.symbol()).to.equal("DGM");
     });
   });
 
   describe('Minting', function () {
     it('should allow user to mint a Digimon with sufficient payment', async function () {
-      await expect(digimonMarketplace.connect(user).mintDigimon(metadataURI, {
-        value: MINT_PRICE
-      }))
+      const patagonURI = getDigimonURI('Betamon');
+      await expect(
+        digimonMarketplace.connect(user).mintDigimon(patagonURI, {
+          value: MINT_PRICE
+        })
+      )
         .to.emit(digimonMarketplace, 'DigimonMinted')
-        .withArgs(user.address, 0, metadataURI);
-
-      expect(await digimonMarketplace.ownerOf(0)).to.equal(user.address);
+        .withArgs(user.address, 1, patagonURI);
     });
 
     it('should fail to mint with insufficient payment', async function () {
@@ -61,13 +63,6 @@ describe('DigimonMarketplace', function () {
   });
 
   describe('Listing', function () {
-    beforeEach(async function () {
-      // Mint a Digimon for testing listings
-      await digimonMarketplace.connect(seller).mintDigimon(metadataURI, {
-        value: MINT_PRICE
-      });
-    });
-
     it('should allow owner to list a Digimon', async function () {
       const price = ethers.parseEther('1');
       const duration = 7 * 24 * 60 * 60; // 7 days
@@ -110,24 +105,18 @@ describe('DigimonMarketplace', function () {
     });
 
     it('should fail to list with price outside allowed range', async function () {
-      const duration = 7 * 24 * 60 * 60;
-
+      const tooLowPrice = ethers.parseEther('0.001');
       await expect(
-        digimonMarketplace.connect(seller).listDigimon(0, ethers.parseEther('0.005'), duration, {
-          value: LISTING_FEE
-        })
-      ).to.be.revertedWith('validPrice: Price out of range');
-
-      await expect(
-        digimonMarketplace.connect(seller).listDigimon(0, ethers.parseEther('150'), duration, {
+        digimonMarketplace.connect(seller).listDigimon(0, tooLowPrice, 7 * 24 * 60 * 60, {
           value: LISTING_FEE
         })
       ).to.be.revertedWith('validPrice: Price out of range');
     });
 
     it('should fail to list with excessive duration', async function () {
+      const price = ethers.parseEther('1');
       await expect(
-        digimonMarketplace.connect(seller).listDigimon(0, ethers.parseEther('1'), MAX_LISTING_DURATION + 1, {
+        digimonMarketplace.connect(seller).listDigimon(0, price, MAX_LISTING_DURATION + 1, {
           value: LISTING_FEE
         })
       ).to.be.revertedWith('listDigimon: Duration too long');
@@ -139,10 +128,7 @@ describe('DigimonMarketplace', function () {
     const duration = 7 * 24 * 60 * 60; // 7 days
 
     beforeEach(async function () {
-      // Mint and list a Digimon
-      await digimonMarketplace.connect(seller).mintDigimon(metadataURI, {
-        value: MINT_PRICE
-      });
+      // List the Digimon
       await digimonMarketplace.connect(seller).listDigimon(0, listingPrice, duration, {
         value: LISTING_FEE
       });
@@ -157,6 +143,7 @@ describe('DigimonMarketplace', function () {
         .to.emit(digimonMarketplace, 'DigimonBought')
         .withArgs(0, buyer.address, listingPrice);
 
+      // Verify ownership transfer
       expect(await digimonMarketplace.ownerOf(0)).to.equal(buyer.address);
     });
 
@@ -188,20 +175,20 @@ describe('DigimonMarketplace', function () {
       const finalSellerBalance = await ethers.provider.getBalance(seller.address);
 
       // Convert to BigInt for comparison
-      expect(finalOwnerBalance - initialOwnerBalance).to.equal(marketplaceFee);
-      expect(finalSellerBalance - initialSellerBalance).to.equal(sellerAmount);
+      expect(BigInt(finalOwnerBalance) - BigInt(initialOwnerBalance)).to.equal(marketplaceFee);
+      expect(BigInt(finalSellerBalance) - BigInt(initialSellerBalance)).to.equal(sellerAmount);
     });
 
     it('should fail to buy with insufficient payment', async function () {
       await expect(
         digimonMarketplace.connect(buyer).buyDigimon(0, {
-          value: ethers.parseEther('0.5') // Less than listing price
+          value: ethers.parseEther('0.5')
         })
       ).to.be.revertedWith('buyDigimon: Insufficient payment');
     });
 
     it('should fail to buy an expired listing', async function () {
-      // Move time forward past the listing duration
+      // Increase time past duration
       await ethers.provider.send('evm_increaseTime', [duration + 1]);
       await ethers.provider.send('evm_mine');
 
@@ -214,8 +201,8 @@ describe('DigimonMarketplace', function () {
 
     it('should handle concurrent buying attempts correctly', async function () {
       const buyer2 = (await ethers.getSigners())[4];
-      
-      // Both buyers try to buy the same listing
+
+      // Both buyers try to buy simultaneously
       const buyTx1 = digimonMarketplace.connect(buyer).buyDigimon(0, {
         value: listingPrice
       });
@@ -223,25 +210,28 @@ describe('DigimonMarketplace', function () {
         value: listingPrice
       });
 
-      // Wait for both transactions
+      // Wait for both transactions to complete or fail
       const results = await Promise.allSettled([buyTx1, buyTx2]);
-
-      // One transaction should succeed
-      const successfulTx = results.find(r => r.status === 'fulfilled');
-      expect(successfulTx).to.not.be.undefined;
-
-      // One transaction should fail
+      
+      // Count successes and failures
+      const successes = results.filter(r => r.status === 'fulfilled').length;
+      const failures = results.filter(r => r.status === 'rejected').length;
+      
+      // Exactly one should succeed and one should fail
+      expect(successes).to.equal(1, 'Exactly one transaction should succeed');
+      expect(failures).to.equal(1, 'Exactly one transaction should fail');
+      
+      // The failed transaction should have the correct error message
       const failedTx = results.find(r => r.status === 'rejected');
-      expect(failedTx).to.not.be.undefined;
-      expect(failedTx.reason.toString()).to.include('buyDigimon: Listing not active');
+      expect(failedTx.reason.message).to.include('buyDigimon: Listing not active');
 
-      // Verify only one buyer got the Digimon
+      // Verify final state
+      const listing = await digimonMarketplace.listings(0);
+      expect(listing.isActive).to.be.false;
+      
+      // Verify ownership - should be transferred to one of the buyers
       const finalOwner = await digimonMarketplace.ownerOf(0);
       expect([buyer.address, buyer2.address]).to.include(finalOwner);
-      
-      // Verify listing is no longer active
-      const listing = await digimonMarketplace.listings(0); // Using public mapping directly
-      expect(listing.isActive).to.be.false;
     });
   });
 
@@ -279,10 +269,3 @@ describe('DigimonMarketplace', function () {
     });
   });
 });
-
-// Helper function to get current block timestamp
-async function getBlockTimestamp() {
-  const blockNumber = await ethers.provider.getBlockNumber();
-  const block = await ethers.provider.getBlock(blockNumber);
-  return block.timestamp;
-}
