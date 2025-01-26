@@ -1,0 +1,23 @@
+{
+  "id": 4,
+  "name": "Betamon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Betamon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 3,
+      "attribute": "Virus"
+    }
+  ],
+  "fields": [
+    {
+      "id": 2,
+      "field": "Nature Spirits",
+      "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": 3,
+  "name": "Angemon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Angemon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 4,
+      "attribute": "Vaccine"
+    }
+  ],
+  "fields": [
+    {
+      "id": 9,
+      "field": "Virus Busters",
+      "image": "https://digi-api.com/images/etc/fields/Virus_Busters.png"
+    },
+    {
+      "id": 7,
+      "field": "Wind Guardians",
+      "image": "https://digi-api.com/images/etc/fields/Wind_Guardians.png"
+    }
+  ]
+}
