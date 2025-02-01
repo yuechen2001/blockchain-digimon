@@ -1,112 +1,92 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  VStack,
-  Text,
-  Spinner,
-} from '@chakra-ui/react';
-import Digimon from '../shared/models/Digimon';
-import DigimonDisplay from '../components/digimonDisplay';
-import { useColorModeValue } from '../components/ui/color-mode';
+import { useConnect, useDisconnect, useAccount, useSignMessage } from 'wagmi';
+import { injected } from 'wagmi/connectors';
+import { signIn, getCsrfToken } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Box, Heading, Button } from '@chakra-ui/react';
 
 export default function Home() {
-  const [digimon, setDigimon] = useState<Digimon | null>(null);
+  const { connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { isConnected, address } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_DIGIMON_API_URL!;
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
-  const headingColor = useColorModeValue('gray.800', 'white');
 
-  const handleGetRandomDigimon = async () => {
-    setIsLoading(true);
-    setError(null);
+  const handleLogin = async () => {
     try {
-      const randomId = Math.floor(Math.random() * 1000) + 1;
-      const response = await fetch(`${API_URL}${randomId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch Digimon');
+      setIsLoading(true);
+      
+      if (isConnected) {
+        await disconnect();
       }
-      const data = await response.json();
-      setDigimon(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+
+      await connect({ connector: injected() });
+      if (!address) throw new Error('No account found');
+
+      const message = {
+        address: address,
+        chain: 1,
+        nonce: await getCsrfToken(),
+        uri: window.location.origin,
+        version: '1',
+        statement: 'Sign in with your wallet to access the Digimon application.',
+      };
+
+      const signature = await signMessageAsync({
+        message: JSON.stringify(message),
+      });
+
+      const response = await signIn('credentials', {
+        message: JSON.stringify(message),
+        signature,
+        redirect: false,
+      });
+
+      if (response?.ok) {
+        router.push('/home');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
-  }
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Box bg={bgColor} minH="100vh" py={12} display="flex" alignItems="center" justifyContent="center">
-        <Spinner size="xl" color="blue.500" borderWidth="4px" />
-      </Box>
-    );
-  }
-
+  };
   return (
     <Box
-      bg={bgColor}
       minH="100vh"
-      py={12}
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      bg="gray.100"
     >
-      <Container maxW="container.lg">
-        <VStack gap={8}>
-          <Heading
-            as="h1"
-            size="2xl"
-            color={headingColor}
-            textAlign="center"
-          >
-            Digimon Discovery
-          </Heading>
-
-          <Button
-            colorScheme="blue"
-            size="lg"
-            onClick={handleGetRandomDigimon}
-            px={8}
-            py={6}
-            fontSize="lg"
-            loading={isLoading}
-            loadingText="Finding Digimon..."
-            _hover={{
-              transform: 'translateY(-2px)',
-              boxShadow: 'lg',
-            }}
-            transition="all 0.2s"
-          >
-            Discover Random Digimon
-          </Button>
-
-          {error && (
-            <Text color="red.500" fontSize="lg">
-              {error}
-            </Text>
-          )}
-
-          {isLoading ? (
-            <Box p={8}>
-              <Spinner size="xl" color="blue.500" borderWidth="4px" />
-            </Box>
-          ) : (
-            digimon && (
-              <Box w="100%" maxW="2xl" mx="auto">
-                <DigimonDisplay digimon={digimon} />
-              </Box>
-            )
-          )}
-        </VStack>
-      </Container>
+      <Box
+        bg="white"
+        p={8}
+        rounded="lg"
+        shadow="md"
+        w="96"
+      >
+        <Heading
+          as="h1"
+          size="lg"
+          mb={6}
+          textAlign="center"
+        >
+          Login to Digimon
+        </Heading>
+        <Button
+          onClick={handleLogin}
+          loading={isLoading}
+          colorScheme="blue"
+          w="full"
+          size="lg"
+        >
+          {isLoading ? 'Connecting...' : 'Connect with MetaMask'}
+        </Button>
+      </Box>
     </Box>
   );
 }
