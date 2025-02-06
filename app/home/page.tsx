@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Box,
+  Box,  
   Button,
   Container,
   Heading,
@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 import Digimon from '../../shared/models/Digimon';
 import DigimonDisplay from '../../components/digimonDisplay';
-import { useColorModeValue } from '../../components/ui/color-mode';
 
 export default function Home() {
   const [digimon, setDigimon] = useState<Digimon | null>(null);
@@ -20,8 +19,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_DIGIMON_API_URL!;
-  const bgColor = useColorModeValue('gray.50', 'gray.900');
-  const headingColor = useColorModeValue('gray.800', 'white');
 
   const handleGetRandomDigimon = async () => {
     setIsLoading(true);
@@ -47,7 +44,7 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <Box bg={bgColor} minH="100vh" py={12} display="flex" alignItems="center" justifyContent="center">
+      <Box bg="chakra-body-bg" minH="100vh" py={12} display="flex" alignItems="center" justifyContent="center">
         <Spinner size="xl" color="blue.500" borderWidth="4px" />
       </Box>
     );
@@ -55,17 +52,18 @@ export default function Home() {
 
   return (
     <Box
-      bg={bgColor}
+      bg="chakra-body-bg"
       minH="100vh"
       py={12}
     >
-      <Container maxW="container.lg">
-        <VStack gap={8}>
+      <Container maxW="container.xl" py={20}>
+        <VStack spacing={8} align="center">
           <Heading
             as="h1"
             size="2xl"
-            color={headingColor}
             textAlign="center"
+            color="chakra-text"
+            mb={4}
           >
             Digimon Discovery
           </Heading>
@@ -77,7 +75,7 @@ export default function Home() {
             px={8}
             py={6}
             fontSize="lg"
-            loading={isLoading}
+            isLoading={isLoading}
             loadingText="Finding Digimon..."
             _hover={{
               transform: 'translateY(-2px)',

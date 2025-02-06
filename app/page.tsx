@@ -79,7 +79,7 @@ export default function Home() {
         </Heading>
         <Button
           onClick={handleLogin}
-          loading={isLoading}
+          isLoading={isLoading}
           colorScheme="blue"
           w="full"
           size="lg"
