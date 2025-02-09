@@ -9,7 +9,12 @@ import {
   VStack,
   Text,
   Spinner,
+  HStack,
+  useToast,
 } from '@chakra-ui/react';
+import { signOut } from 'next-auth/react';
+import { useDisconnect } from 'wagmi';
+import { useRouter } from 'next/navigation';
 import Digimon from '../../shared/models/Digimon';
 import DigimonDisplay from '../../components/digimonDisplay';
 
@@ -18,7 +23,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_DIGIMON_API_URL!;
+  const router = useRouter();
+  const toast = useToast();
+  const { disconnect } = useDisconnect();
 
   const handleGetRandomDigimon = async () => {
     setIsLoading(true);
@@ -37,6 +46,34 @@ export default function Home() {
       setIsLoading(false);
     }
   }
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      // Disconnect wallet
+      disconnect();
+      // Sign out from NextAuth
+      await signOut({ redirect: false });
+      // Redirect to login page
+      router.push('/');
+      toast({
+        title: 'Logged out successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error logging out',
+        description: error instanceof Error ? error.message : 'Failed to log out',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -57,16 +94,26 @@ export default function Home() {
       py={12}
     >
       <Container maxW="container.xl" py={20}>
-        <VStack spacing={8} align="center">
-          <Heading
-            as="h1"
-            size="2xl"
-            textAlign="center"
-            color="chakra-text"
-            mb={4}
-          >
-            Digimon Discovery
-          </Heading>
+        <VStack spacing={8} align="stretch">
+          <HStack justify="space-between" align="center">
+            <Heading
+              as="h1"
+              size="2xl"
+              textAlign="center"
+              color="chakra-text"
+              mb={4}
+            >
+              Digimon Discovery
+            </Heading>
+            <Button
+              colorScheme="red"
+              onClick={handleLogout}
+              isLoading={isLoggingOut}
+              loadingText="Logging out..."
+            >
+              Log Out
+            </Button>
+          </HStack>
 
           <Button
             colorScheme="blue"

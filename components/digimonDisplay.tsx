@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Box, Button, Heading, Text, VStack, HStack, Stack, Input, Badge, Divider } from '@chakra-ui/react';
+import { Box, Button, Heading, Text, VStack, HStack, Stack, Input, Badge, Divider, useToast } from '@chakra-ui/react';
 import { ethers } from 'ethers';
-import toast from 'react-hot-toast';
 import { useWeb3Context } from '../context/Web3Context';
 import Digimon from '../shared/models/Digimon';
 
@@ -20,6 +19,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
   const [duration, setDuration] = useState('7');
   const [mounted, setMounted] = useState(false);
   const { contract, account, isConnected } = useWeb3Context();
+  const toast = useToast();
 
   useEffect(() => {
     setMounted(true);
@@ -34,25 +34,54 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
 
   const handleMint = async () => {
     if (!contract || !account) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
     try {
       const mintingFee = ethers.parseEther('0.05');
       const tx = await contract.mintDigimon(digimon.name, { value: mintingFee });
-      toast.loading('Minting your Digimon...');
+      toast({
+        title: 'Minting Digimon',
+        description: 'Please wait while your Digimon is being minted...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully minted your Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully minted your Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error minting:', error);
-      toast.error('Failed to mint Digimon');
+      toast({
+        title: 'Minting Failed',
+        description: error instanceof Error ? error.message : 'Failed to mint Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleList = async () => {
     if (!contract || !account || !tokenId) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -60,29 +89,69 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
       const priceInWei = ethers.parseEther(price);
       const durationInDays = parseInt(duration) * 24 * 60 * 60;
       const tx = await contract.listDigimon(tokenId, priceInWei, durationInDays);
-      toast.loading('Listing your Digimon...');
+      toast({
+        title: 'Listing Digimon',
+        description: 'Please wait while your Digimon is being listed...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully listed your Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully listed your Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error listing:', error);
-      toast.error('Failed to list Digimon');
+      toast({
+        title: 'Listing Failed',
+        description: error instanceof Error ? error.message : 'Failed to list Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleBuy = async () => {
     if (!contract || !account || !tokenId || !listingPrice) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
     try {
       const tx = await contract.buyDigimon(tokenId, { value: ethers.parseEther(listingPrice) });
-      toast.loading('Buying Digimon...');
+      toast({
+        title: 'Buying Digimon',
+        description: 'Please wait while your Digimon is being purchased...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully purchased Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully purchased Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error buying:', error);
-      toast.error('Failed to buy Digimon');
+      toast({
+        title: 'Purchase Failed',
+        description: error instanceof Error ? error.message : 'Failed to buy Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
