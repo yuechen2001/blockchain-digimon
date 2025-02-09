@@ -12,6 +12,7 @@ interface Web3ContextType {
   isConnected: boolean;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
+  error: string | null;
 }
 
 const Web3Context = createContext<Web3ContextType>({
@@ -21,6 +22,7 @@ const Web3Context = createContext<Web3ContextType>({
   isConnected: false,
   connectWallet: async () => {},
   disconnectWallet: () => {},
+  error: null,
 });
 
 export const useWeb3Context = () => useContext(Web3Context);
@@ -30,6 +32,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [provider, setProvider] = useState<BrowserProvider | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
@@ -64,33 +67,48 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         window.location.reload();
       });
 
-      // Check if already connected
       try {
-        const accounts = await provider.listAccounts();
-        if (accounts.length > 0) {
-          setAccount(accounts[0].address);
-          initContract(provider);
-        }
+        await checkInitialConnection();
       } catch (error) {
-        console.error('Error checking initial connection:', error);
+        setError(error instanceof Error ? error.message : 'Failed to check initial connection');
+      }
+    }
+  };
+
+  const checkInitialConnection = async () => {
+    if (provider) {
+      const accounts = await provider.listAccounts();
+      if (accounts.length > 0) {
+        setAccount(accounts[0].address);
+        await initContract(provider);
       }
     }
   };
 
   const initContract = async (provider: BrowserProvider) => {
     if (!CONTRACT_ADDRESS) {
-      console.error('Contract address not found in environment variables');
+      setError('Contract configuration missing. Please check your environment variables.');
       return;
     }
 
     try {
-      // Cast the provider to BrowserProvider to access getSigner
-      const browserProvider = provider;
-      const signer = await browserProvider.getSigner();
+      await initializeContract();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to initialize contract');
+    }
+  };
+
+  const initializeContract = async () => {
+    if (!provider) {
+      throw new Error('Provider not initialized');
+    }
+    if (!CONTRACT_ADDRESS) {
+      throw new Error('Contract address not configured');
+    }
+    if (provider) {
+      const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, DIGIMON_MARKETPLACE_ABI, signer);
       setContract(contract);
-    } catch (error) {
-      console.error('Error initializing contract:', error);
     }
   };
 
@@ -110,7 +128,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       toast.success('Wallet connected successfully!');
     } catch (error) {
-      console.error('Error connecting wallet:', error);
+      setError(error instanceof Error ? error.message : 'Failed to connect wallet');
       toast.error('Failed to connect wallet');
     }
   };
@@ -118,6 +136,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const disconnectWallet = () => {
     setAccount(null);
     setContract(null);
+    setError(null);
     toast.success('Wallet disconnected');
   };
 
@@ -134,6 +153,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         isConnected: !!account,
         connectWallet,
         disconnectWallet,
+        error,
       }}
     >
       {children}
