@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Box, Button, Heading, Text, VStack, HStack, Stack, Input, Badge, Separator } from '@chakra-ui/react';
+import { Box, Button, Heading, Text, VStack, HStack, Stack, Input, Badge, Divider, useToast } from '@chakra-ui/react';
 import { ethers } from 'ethers';
-import toast from 'react-hot-toast';
 import { useWeb3Context } from '../context/Web3Context';
 import Digimon from '../shared/models/Digimon';
-import { useColorModeValue } from './ui/color-mode';
 
 interface DigimonDisplayProps {
   digimon: Digimon | null;
@@ -21,11 +19,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
   const [duration, setDuration] = useState('7');
   const [mounted, setMounted] = useState(false);
   const { contract, account, isConnected } = useWeb3Context();
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
-  const headingColor = useColorModeValue('gray.700', 'white');
-  const textColor = useColorModeValue('gray.600', 'gray.300');
-  const imageBgColor = useColorModeValue('gray.50', 'gray.900');
+  const toast = useToast();
 
   useEffect(() => {
     setMounted(true);
@@ -40,25 +34,54 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
 
   const handleMint = async () => {
     if (!contract || !account) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
     try {
       const mintingFee = ethers.parseEther('0.05');
       const tx = await contract.mintDigimon(digimon.name, { value: mintingFee });
-      toast.loading('Minting your Digimon...');
+      toast({
+        title: 'Minting Digimon',
+        description: 'Please wait while your Digimon is being minted...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully minted your Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully minted your Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error minting:', error);
-      toast.error('Failed to mint Digimon');
+      toast({
+        title: 'Minting Failed',
+        description: error instanceof Error ? error.message : 'Failed to mint Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleList = async () => {
     if (!contract || !account || !tokenId) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -66,40 +89,81 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
       const priceInWei = ethers.parseEther(price);
       const durationInDays = parseInt(duration) * 24 * 60 * 60;
       const tx = await contract.listDigimon(tokenId, priceInWei, durationInDays);
-      toast.loading('Listing your Digimon...');
+      toast({
+        title: 'Listing Digimon',
+        description: 'Please wait while your Digimon is being listed...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully listed your Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully listed your Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error listing:', error);
-      toast.error('Failed to list Digimon');
+      toast({
+        title: 'Listing Failed',
+        description: error instanceof Error ? error.message : 'Failed to list Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleBuy = async () => {
     if (!contract || !account || !tokenId || !listingPrice) {
-      toast.error('Please connect your wallet first');
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet first',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
     try {
       const tx = await contract.buyDigimon(tokenId, { value: ethers.parseEther(listingPrice) });
-      toast.loading('Buying Digimon...');
+      toast({
+        title: 'Buying Digimon',
+        description: 'Please wait while your Digimon is being purchased...',
+        status: 'loading',
+        duration: null,
+        isClosable: false,
+      });
       await tx.wait();
-      toast.success('Successfully purchased Digimon!');
+      toast({
+        title: 'Success',
+        description: 'Successfully purchased Digimon!',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
     } catch (error) {
-      console.error('Error buying:', error);
-      toast.error('Failed to buy Digimon');
+      toast({
+        title: 'Purchase Failed',
+        description: error instanceof Error ? error.message : 'Failed to buy Digimon',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   return (
     <Box
       p={6}
+      bg="chakra-body-bg"
       borderWidth="1px"
-      borderRadius="2xl"
-      boxShadow="xl"
-      bg={bgColor}
-      borderColor={borderColor}
+      borderRadius="lg"
+      borderColor="chakra-border-color"
+      boxShadow="lg"
+      w="full"
       maxW="2xl"
       mx="auto"
       transition="all 0.3s"
@@ -108,7 +172,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
       <VStack gap={6} align="stretch">
         {/* Header Section */}
         <HStack justify="space-between" align="center">
-          <Heading as="h2" size="xl" fontWeight="bold" color={headingColor}>
+          <Heading as="h2" size="xl" fontWeight="bold" color="chakra-text">
             {digimon.name}
           </Heading>
           <HStack gap={2}>
@@ -135,7 +199,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
           borderRadius="xl" 
           overflow="hidden"
           boxShadow="md"
-          bg={imageBgColor}
+          bg="chakra-subtle-bg"
           display="flex"
           alignItems="center"
           justifyContent="center"
@@ -206,14 +270,14 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
           </VStack>
         )}
 
-        <Separator />
+        <Divider />
 
         {/* Details Section */}
         <Stack gap={4}>
           {/* Types Section */}
           {digimon.types && digimon.types.length > 0 && (
             <Box>
-              <Heading as="h3" size="md" mb={2} color={headingColor}>
+              <Heading as="h3" size="md" mb={2} color="chakra-text">
                 Types
               </Heading>
               <HStack gap={2}>
@@ -236,7 +300,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
           {/* Attributes Section */}
           {digimon.attributes && digimon.attributes.length > 0 && (
             <Box>
-              <Heading as="h3" size="md" mb={2} color={headingColor}>
+              <Heading as="h3" size="md" mb={2} color="chakra-text">
                 Attributes
               </Heading>
               <HStack gap={2}>
@@ -259,7 +323,7 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
           {/* Fields Section */}
           {digimon.fields && digimon.fields.length > 0 && (
             <Box>
-              <Heading as="h3" size="md" mb={2} color={headingColor}>
+              <Heading as="h3" size="md" mb={2} color="chakra-text">
                 Fields
               </Heading>
               <HStack gap={2} flexWrap="wrap">
@@ -281,10 +345,10 @@ function DigimonDisplay({ digimon, tokenId, isListed, listingPrice }: DigimonDis
 
           {/* Description Section */}
           <Box>
-            <Heading as="h3" size="md" mb={2} color={headingColor}>
+            <Heading as="h3" size="md" mb={2} color="chakra-text">
               Description
             </Heading>
-            <Text color={textColor}>
+            <Text color="chakra-text-subtle">
               {description}
             </Text>
           </Box>

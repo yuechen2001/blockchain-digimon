@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Provider } from "../components/ui/provider";
-import { Web3Provider } from '../context/Web3Context';
-import { Toaster } from 'react-hot-toast';
+import { Providers } from './providers';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Digimon NFT Marketplace",
-  description: "Trade and collect your favorite Digimon as NFTs",
+  title: 'Digimon Blockchain',
+  description: 'A blockchain-based Digimon application',
 };
 
 export default function RootLayout({
@@ -28,12 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Web3Provider>
-          <Provider>
-            {children}
-            <Toaster position="bottom-right" />
-          </Provider>
-        </Web3Provider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
