@@ -1,62 +1,27 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
-import { http, createConfig } from 'wagmi';
-import { mainnet, sepolia } from 'wagmi/chains';
-import { injected, metaMask } from 'wagmi/connectors';
+import { ChakraProvider } from '@chakra-ui/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
-import { ChakraProvider, Spinner, Center } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { config } from '../config/wagmi';
+import { Web3Provider } from '../context/Web3Context';
+import { AuthProvider } from '../context/AuthContext';
+import { SessionProvider } from 'next-auth/react';
+import theme from './theme';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 2,
-    },
-  },
-});
-
-const config = createConfig({
-  chains: [mainnet, sepolia],
-  ssr: true,
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
-  connectors: [
-    injected({
-      shimDisconnect: true,
-    }), 
-    metaMask()
-  ]
-});
+const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Center minH="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
-  }
-
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <SessionProvider>
-          <ChakraProvider>
-            {children}
+          <ChakraProvider theme={theme}>
+            <AuthProvider>
+              <Web3Provider>
+                {children}
+              </Web3Provider>
+            </AuthProvider>
           </ChakraProvider>
         </SessionProvider>
       </QueryClientProvider>
