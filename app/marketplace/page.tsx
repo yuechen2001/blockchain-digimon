@@ -9,16 +9,17 @@ import {
   Text,
   Spinner,
   useToast,
-  Button,
-  HStack,
   VStack,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../../context/Web3Context';
 import DigimonDisplay from '../../components/digimonDisplay';
+import { GlobalHeader } from '../../components/GlobalHeader';
 import { ethers } from 'ethers';
 import Digimon from '../../shared/models/Digimon';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 
 interface ListedDigimon extends Digimon {
   listingId: string;
@@ -32,64 +33,76 @@ export default function Marketplace() {
   const [listedDigimons, setListedDigimons] = useState<ListedDigimon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { contract, account, disconnect } = useWeb3Context();
+  const { contract, account, isConnected } = useWeb3Context();
   const toast = useToast();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      disconnect?.();
-      await signOut({ redirect: false });
-      router.push('/');
-    } catch (error) {
-      toast({
-        title: 'Error logging out',
-        description: error instanceof Error ? error.message : 'Failed to log out',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const fetchListedDigimons = async () => {
-    if (!contract) {
-      setError('Contract not initialized');
+    if (!contract || !isConnected) {
+      setError('Contract not initialized or wallet not connected');
+      setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
       setError(null);
+      console.log('Fetching listings...');
 
-      const listingCounter = await contract._listingCounter();
       const activeListings: ListedDigimon[] = [];
+      let listingId = 0;
+      let hasMore = true;
 
-      // Fetch all listings using the public listings mapping
-      for (let i = 0; i < listingCounter; i++) {
-        const listing = await contract.listings(i);
-        
-        // Check if listing is active and not expired
-        if (listing.isActive && listing.expiresAt > Date.now() / 1000) {
-          // Fetch Digimon data from your API
-          const tokenId = listing.digimonId.toString();
-          const response = await fetch(`${process.env.NEXT_PUBLIC_DIGIMON_API_URL}${tokenId}`);
-          if (!response.ok) continue;
-          const digimonData = await response.json();
+      // Keep fetching listings until we find one that doesn't exist
+      while (hasMore) {
+        try {
+          console.log('Checking listing', listingId);
+          const listing = await contract.listings(listingId);
+          
+          // Check if listing is active and not expired
+          if (listing.isActive && listing.expiresAt > Date.now() / 1000) {
+            const tokenId = listing.digimonId.toString();
+            console.log('Found active listing for token:', tokenId);
+            
+            // For now, use mock data since we don't have the API
+            const digimonData = {
+              name: `Digimon #${tokenId}`,
+              image: `https://placekitten.com/200/200?${tokenId}`, // Placeholder image
+              description: `A powerful Digimon with ID ${tokenId}`,
+              attributes: []
+            };
 
-          activeListings.push({
-            ...digimonData,
-            listingId: i.toString(),
-            tokenId,
-            price: ethers.formatEther(listing.price),
-            seller: listing.seller,
-            expiresAt: Number(listing.expiresAt),
-          });
+            activeListings.push({
+              ...digimonData,
+              listingId: listingId.toString(),
+              tokenId,
+              price: ethers.formatEther(listing.price),
+              seller: listing.seller,
+              expiresAt: Number(listing.expiresAt),
+              id: 0,
+              xAntibody: false,
+              images: [],
+              levels: [],
+              types: [],
+              fields: [],
+              releaseDate: '',
+              descriptions: [],
+              skills: [],
+              priorEvolutions: [],
+              nextEvolutions: []
+            });
+            console.log('Added listing:', activeListings[activeListings.length - 1]);
+          }
+          listingId++;
+        } catch (err) {
+          console.log('No more listings found at index', listingId);
+          hasMore = false;
         }
       }
 
+      console.log('Final active listings:', activeListings);
       setListedDigimons(activeListings);
     } catch (err) {
+      console.error('Error in fetchListedDigimons:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch listings');
       toast({
         title: 'Error',
@@ -103,121 +116,66 @@ export default function Marketplace() {
     }
   };
 
-  const handlePurchase = async (listingId: string, price: string) => {
-    if (!contract || !account) {
-      toast({
-        title: 'Error',
-        description: 'Please connect your wallet first',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    try {
-      const tx = await contract.buyDigimon(listingId, {
-        value: ethers.parseEther(price),
-      });
-      await tx.wait();
-
-      toast({
-        title: 'Success',
-        description: 'Successfully purchased Digimon NFT!',
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-
-      // Refresh the listings
-      await fetchListedDigimons();
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: err instanceof Error ? err.message : 'Failed to purchase NFT',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
   useEffect(() => {
-    if (contract) {
+    if (contract && isConnected) {
       fetchListedDigimons();
     }
-  }, [contract]);
+  }, [contract, isConnected]);
 
-  if (isLoading) {
+  if (!isConnected) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="100vh">
-        <Spinner size="xl" />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box textAlign="center" py={10}>
-        <Text color="red.500">{error}</Text>
-      </Box>
+      <>
+        <GlobalHeader />
+        <Container maxW="container.xl" py={10}>
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertTitle>Wallet not connected!</AlertTitle>
+            <AlertDescription>Please connect your wallet to view marketplace listings.</AlertDescription>
+          </Alert>
+        </Container>
+      </>
     );
   }
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <HStack justify="space-between" mb={8}>
-        <Heading>Marketplace</Heading>
-        <HStack spacing={4}>
-          <Button
-            colorScheme="blue"
-            onClick={() => router.push('/my-listings')}
-          >
-            My Listings
-          </Button>
-          <Button
-            colorScheme="red"
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </HStack>
-      </HStack>
-      {listedDigimons.length === 0 ? (
-        <Text>No Digimons currently listed for sale.</Text>
-      ) : (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {listedDigimons.map((digimon) => (
-            <Box
-              key={digimon.listingId}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              p={4}
-            >
-              <DigimonDisplay digimon={digimon} />
-              <VStack mt={4} spacing={2}>
-                <Text fontWeight="bold">Price: {digimon.price} ETH</Text>
-                <Text fontSize="sm" color="gray.500">
-                  Seller: {digimon.seller}
-                </Text>
-                <Text fontSize="sm" color="gray.500">
-                  Expires: {new Date(digimon.expiresAt * 1000).toLocaleString()}
-                </Text>
-                {account && account.toLowerCase() !== digimon.seller.toLowerCase() && (
-                  <Button
-                    colorScheme="blue"
-                    width="full"
-                    onClick={() => handlePurchase(digimon.listingId, digimon.price)}
-                  >
-                    Purchase
-                  </Button>
-                )}
-              </VStack>
+    <>
+      <GlobalHeader />
+      <Container maxW="container.xl" py={10}>
+        <VStack spacing={8} align="stretch">
+          <Box>
+            <Heading size="xl">Marketplace</Heading>
+            <Text mt={2} color="gray.600">
+              Browse and purchase Digimons
+            </Text>
+          </Box>
+
+          {isLoading ? (
+            <Box textAlign="center" py={10}>
+              <Spinner size="xl" />
+              <Text mt={4}>Loading marketplace listings...</Text>
             </Box>
-          ))}
-        </SimpleGrid>
-      )}
-    </Container>
+          ) : error ? (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : listedDigimons.length === 0 ? (
+            <Box textAlign="center" py={10}>
+              <Text>No Digimons are currently listed in the marketplace.</Text>
+            </Box>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+              {listedDigimons.map((digimon) => (
+                <DigimonDisplay
+                  key={digimon.listingId}
+                  digimon={digimon}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </VStack>
+      </Container>
+    </>
   );
 }
