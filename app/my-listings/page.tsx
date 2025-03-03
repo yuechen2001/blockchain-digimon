@@ -17,14 +17,16 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  Input,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../../context/Web3Context';
 import DigimonDisplay from '../../components/digimonDisplay';
+import { GlobalHeader } from '../../components/GlobalHeader';
 import { ethers } from 'ethers';
 import Digimon from '../../shared/models/Digimon';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 
 interface OwnedDigimon extends Digimon {
   tokenId: string;
@@ -39,75 +41,77 @@ export default function MyListings() {
   const [error, setError] = useState<string | null>(null);
   const [listingPrice, setListingPrice] = useState<string>('0.01');
   const [listingDuration, setListingDuration] = useState<string>('7');
-  const { contract, account, disconnect } = useWeb3Context();
+  const { contract, account, isConnected } = useWeb3Context();
   const toast = useToast();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      disconnect?.();
-      await signOut({ redirect: false });
-      router.push('/');
-    } catch (error) {
-      toast({
-        title: 'Error logging out',
-        description: error instanceof Error ? error.message : 'Failed to log out',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const fetchOwnedDigimons = async () => {
     if (!contract || !account) {
       setError('Please connect your wallet');
+      setIsLoading(false);
       return;
     }
 
     try {
       setIsLoading(true);
       setError(null);
+      console.log('Fetching owned Digimons for account:', account);
 
       // Get all token IDs owned by the user
       const filter = contract.filters.Transfer(null, account, null);
+      console.log('Fetching transfer events...');
       const events = await contract.queryFilter(filter);
       const tokenIds = events.map(event => event.args[2].toString());
+      console.log('Found token IDs:', tokenIds);
 
       // Get all listings to check if any owned tokens are listed
-      const listingCounter = await contract._listingCounter();
       const listings = [];
+      let listingId = 0;
+      let hasMore = true;
       
-      // Use the public listings mapping
-      for (let i = 0; i < listingCounter; i++) {
-        const listing = await contract.listings(i);
-        if (listing.isActive && listing.seller.toLowerCase() === account.toLowerCase()) {
-          listings.push({
-            listingId: i.toString(),
-            tokenId: listing.digimonId.toString(),
-            price: ethers.formatEther(listing.price),
-            seller: listing.seller,
-            expiresAt: Number(listing.expiresAt),
-          });
+      // Keep fetching listings until we find one that doesn't exist
+      while (hasMore) {
+        try {
+          console.log('Checking listing', listingId);
+          const listing = await contract.listings(listingId);
+          if (listing.isActive && listing.seller.toLowerCase() === account.toLowerCase()) {
+            listings.push({
+              listingId: listingId.toString(),
+              tokenId: listing.digimonId.toString(),
+              price: ethers.formatEther(listing.price),
+              seller: listing.seller,
+              expiresAt: Number(listing.expiresAt),
+            });
+            console.log('Found active listing:', listings[listings.length - 1]);
+          }
+          listingId++;
+        } catch (err) {
+          console.log('No more listings found at index', listingId);
+          hasMore = false;
         }
       }
 
       const formattedTokens = await Promise.all(
         tokenIds.map(async (tokenId) => {
           try {
+            console.log('Processing token:', tokenId);
             // Check if we still own this token
             const currentOwner = await contract.ownerOf(tokenId);
             if (currentOwner.toLowerCase() !== account.toLowerCase()) {
+              console.log('Token', tokenId, 'no longer owned by account');
               return null;
             }
 
-            // Fetch Digimon data from your API
-            const response = await fetch(`${process.env.NEXT_PUBLIC_DIGIMON_API_URL}${tokenId}`);
-            if (!response.ok) return null;
-            const digimonData = await response.json();
+            // For now, use mock data since we don't have the API
+            const digimonData = {
+              name: `Digimon #${tokenId}`,
+              image: `https://placekitten.com/200/200?${tokenId}`, // Placeholder image
+              description: `A powerful Digimon with ID ${tokenId}`,
+              attributes: []
+            };
 
             // Check if token is listed
             const listing = listings.find(l => l.tokenId === tokenId);
+            console.log('Listing status for token', tokenId, ':', listing || 'not listed');
 
             return {
               ...digimonData,
@@ -125,8 +129,11 @@ export default function MyListings() {
         })
       );
 
-      setOwnedDigimons(formattedTokens.filter(Boolean) as OwnedDigimon[]);
+      const filteredTokens = formattedTokens.filter(Boolean) as OwnedDigimon[];
+      console.log('Final owned Digimons:', filteredTokens);
+      setOwnedDigimons(filteredTokens);
     } catch (err) {
+      console.error('Error in fetchOwnedDigimons:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch owned Digimons');
       toast({
         title: 'Error',
@@ -141,9 +148,19 @@ export default function MyListings() {
   };
 
   const handleList = async (tokenId: string) => {
-    if (!contract) return;
+    if (!contract) {
+      toast({
+        title: 'Error',
+        description: 'Contract not initialized',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
 
     try {
+      console.log('Listing token:', tokenId, 'for', listingPrice, 'ETH');
       const priceInWei = ethers.parseEther(listingPrice);
       const durationInSeconds = Number(listingDuration) * 24 * 60 * 60; // Convert days to seconds
 
@@ -154,7 +171,9 @@ export default function MyListings() {
         durationInSeconds,
         { value: ethers.parseEther('0.05') } // Required listing fee
       );
+      console.log('Listing transaction:', tx.hash);
       await tx.wait();
+      console.log('Transaction confirmed');
 
       toast({
         title: 'Success',
@@ -167,6 +186,7 @@ export default function MyListings() {
       // Refresh the listings
       await fetchOwnedDigimons();
     } catch (err) {
+      console.error('Error listing token:', err);
       toast({
         title: 'Error',
         description: err instanceof Error ? err.message : 'Failed to list NFT',
@@ -178,119 +198,121 @@ export default function MyListings() {
   };
 
   useEffect(() => {
-    if (contract && account) {
+    if (contract && isConnected) {
       fetchOwnedDigimons();
     }
-  }, [contract, account]);
+  }, [contract, isConnected]);
 
-  if (isLoading) {
+  if (!isConnected) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="100vh">
-        <Spinner size="xl" />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box textAlign="center" py={10}>
-        <Text color="red.500">{error}</Text>
-      </Box>
+      <>
+        <GlobalHeader />
+        <Container maxW="container.xl" py={10}>
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertTitle>Wallet not connected!</AlertTitle>
+            <AlertDescription>Please connect your wallet to view your Digimons.</AlertDescription>
+          </Alert>
+        </Container>
+      </>
     );
   }
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <HStack justify="space-between" mb={8}>
-        <Heading>My Digimons</Heading>
-        <HStack spacing={4}>
-          <Button
-            colorScheme="blue"
-            onClick={() => router.push('/marketplace')}
-          >
-            Back to Marketplace
-          </Button>
-          <Button
-            colorScheme="red"
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
-        </HStack>
-      </HStack>
-      {ownedDigimons.length === 0 ? (
-        <Text>You don't own any Digimons yet.</Text>
-      ) : (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {ownedDigimons.map((digimon) => (
-            <Box
-              key={digimon.tokenId}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              p={4}
-            >
-              <DigimonDisplay digimon={digimon} />
-              {digimon.listingId ? (
-                <VStack mt={4} spacing={2}>
-                  <Text fontWeight="bold">Listed for: {digimon.price} ETH</Text>
-                  <Text fontSize="sm" color="gray.500">
-                    Expires: {new Date(digimon.expiresAt! * 1000).toLocaleString()}
-                  </Text>
-                </VStack>
-              ) : (
-                <VStack mt={4} spacing={2}>
-                  <HStack width="full">
-                    <Text>Price (ETH):</Text>
-                    <NumberInput
-                      value={listingPrice}
-                      onChange={(value) => setListingPrice(value)}
-                      min={0.01}
-                      max={100}
-                      step={0.01}
-                      precision={2}
-                      flex={1}
-                    >
-                      <NumberInputField />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </HStack>
-                  <HStack width="full">
-                    <Text>Duration (days):</Text>
-                    <NumberInput
-                      value={listingDuration}
-                      onChange={(value) => setListingDuration(value)}
-                      min={1}
-                      max={30}
-                      step={1}
-                      flex={1}
-                    >
-                      <NumberInputField />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </HStack>
-                  <Button
-                    colorScheme="blue"
-                    width="full"
-                    onClick={() => handleList(digimon.tokenId)}
-                  >
-                    List for Sale
-                  </Button>
-                  <Text fontSize="xs" color="gray.500">
-                    *Requires 0.05 ETH listing fee
-                  </Text>
-                </VStack>
-              )}
+    <>
+      <GlobalHeader />
+      <Container maxW="container.xl" py={10}>
+        <VStack spacing={8} align="stretch">
+          <Box>
+            <Heading size="xl">My Digimons</Heading>
+            <Text mt={2} color="gray.600">
+              View and list your Digimons for sale
+            </Text>
+          </Box>
+
+          {isLoading ? (
+            <Box textAlign="center" py={10}>
+              <Spinner size="xl" />
+              <Text mt={4}>Loading your Digimons...</Text>
             </Box>
-          ))}
-        </SimpleGrid>
-      )}
-    </Container>
+          ) : error ? (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : ownedDigimons.length === 0 ? (
+            <Box textAlign="center" py={10}>
+              <Text>You don't own any Digimons yet.</Text>
+            </Box>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+              {ownedDigimons.map((digimon) => (
+                <Box
+                  key={digimon.tokenId}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  p={4}
+                >
+                  <DigimonDisplay digimon={digimon} />
+                  <VStack mt={4} spacing={2}>
+                    {digimon.listingId ? (
+                      <>
+                        <Text fontWeight="bold">Listed for {digimon.price} ETH</Text>
+                        <Text fontSize="sm" color="gray.500">
+                          Expires: {new Date(digimon.expiresAt! * 1000).toLocaleString()}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <HStack>
+                          <NumberInput
+                            value={listingPrice}
+                            onChange={setListingPrice}
+                            min={0.000001}
+                            precision={6}
+                            step={0.1}
+                            w="full"
+                          >
+                            <NumberInputField placeholder="Price in ETH" />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </HStack>
+                        <HStack>
+                          <NumberInput
+                            value={listingDuration}
+                            onChange={setListingDuration}
+                            min={1}
+                            max={30}
+                            w="full"
+                          >
+                            <NumberInputField placeholder="Duration in days" />
+                            <NumberInputStepper>
+                              <NumberIncrementStepper />
+                              <NumberDecrementStepper />
+                            </NumberInputStepper>
+                          </NumberInput>
+                        </HStack>
+                        <Button
+                          colorScheme="blue"
+                          width="full"
+                          onClick={() => handleList(digimon.tokenId)}
+                        >
+                          List for Sale
+                        </Button>
+                      </>
+                    )}
+                  </VStack>
+                </Box>
+              ))}
+            </SimpleGrid>
+          )}
+        </VStack>
+      </Container>
+    </>
   );
 }
