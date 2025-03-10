@@ -18,17 +18,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // Special handling for connect-wallet page
-  if (pathname === '/connect-wallet') {
-    return NextResponse.next();
-  }
-
-  // For all other protected routes, check if wallet is connected
-  const user = session.user as { walletAddress?: string } | undefined;
-  if (!user?.walletAddress && pathname !== '/connect-wallet') {
-    return NextResponse.redirect(new URL('/connect-wallet', request.url));
-  }
-
+  // Allow access to all protected routes if authenticated
   return NextResponse.next();
 }
 
@@ -36,7 +26,6 @@ export const config = {
   matcher: [
     '/marketplace/:path*',
     '/my-listings/:path*',
-    '/connect-wallet',
     '/login',
     '/register',
   ],

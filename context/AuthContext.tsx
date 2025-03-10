@@ -73,7 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(result.error);
       }
 
-      router.push('/connect-wallet');
+      // Redirect to marketplace after successful login
+      router.push('/marketplace');
     } catch (error) {
       console.error('Login error:', error);
       setError(error instanceof Error ? error.message : 'An error occurred during login');
