@@ -28,7 +28,7 @@ export default function Home() {
       if (user.walletAddress) {
         router.push('/marketplace');
       } else {
-        router.push('/connect-wallet');
+        router.push('/register');
       }
     }
   }, [user, router]);

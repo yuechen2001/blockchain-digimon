@@ -67,7 +67,7 @@ export default function RegisterPage() {
 
     try {
       await register(email, username, password);
-      router.push('/connect-wallet');
+      // User will stay on register page to connect wallet
     } catch (err) {
       // Error is now handled by the AuthContext
       console.error('Registration failed:', err);
