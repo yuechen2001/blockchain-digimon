@@ -1,7 +1,6 @@
-import Digimon from '../shared/models/Digimon';
 
 // Function to map JSON to Digimon type
-export default function mapJsonToDigimon(json: DigimonJson): Digimon {
+export default function mapJsonToDigimon(json) {
   return {
     id: json.id,
     name: json.name,
@@ -57,55 +56,55 @@ export default function mapJsonToDigimon(json: DigimonJson): Digimon {
 }
 
 // Type for the JSON data
-type DigimonJson = {
-  id: number;
-  name: string;
-  xAntibody: boolean;
-  images: Array<{
-    href: string;
-    transparent: boolean;
-  }>;
-  levels: Array<{
-    id: number;
-    level: string;
-  }>;
-  types: Array<{
-    id: number;
-    type: string;
-  }>;
-  attributes: Array<{
-    id: number;
-    attribute: string;
-  }>;
-  fields: Array<{
-    id: number;
-    field: string;
-    image: string;
-  }>;
-  releaseDate: string;
-  descriptions: Array<{
-    origin: string;
-    language: string;
-    description: string;
-  }>;
-  skills: Array<{
-    id: number;
-    skill: string;
-    translation: string;
-    description: string;
-  }>;
-  priorEvolutions: Array<{
-    id: number;
-    digimon: string;
-    condition: string;
-    image: string;
-    url: string;
-  }>;
-  nextEvolutions: Array<{
-    id: number;
-    digimon: string;
-    condition: string;
-    image: string;
-    url: string;
-  }>;
-};
+// {
+//   id: number;
+//   name: string;
+//   xAntibody: boolean;
+//   images: Array<{
+//     href: string;
+//     transparent: boolean;
+//   }>;
+//   levels: Array<{
+//     id: number;
+//     level: string;
+//   }>;
+//   types: Array<{
+//     id: number;
+//     type: string;
+//   }>;
+//   attributes: Array<{
+//     id: number;
+//     attribute: string;
+//   }>;
+//   fields: Array<{
+//     id: number;
+//     field: string;
+//     image: string;
+//   }>;
+//   releaseDate: string;
+//   descriptions: Array<{
+//     origin: string;
+//     language: string;
+//     description: string;
+//   }>;
+//   skills: Array<{
+//     id: number;
+//     skill: string;
+//     translation: string;
+//     description: string;
+//   }>;
+//   priorEvolutions: Array<{
+//     id: number;
+//     digimon: string;
+//     condition: string;
+//     image: string;
+//     url: string;
+//   }>;
+//   nextEvolutions: Array<{
+//     id: number;
+//     digimon: string;
+//     condition: string;
+//     image: string;
+//     url: string;
+//   }>;
+// }
