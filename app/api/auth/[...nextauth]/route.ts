@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
           }
 
           // Read users from JSON file
-          const usersPath = path.join(process.cwd(), 'data', 'users.json');
+          const usersPath = path.join(process.cwd(), 'data', 'users', 'users.json');
           let users = [];
           
           try {

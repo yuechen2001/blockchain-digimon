@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     // Get the user from the users.json file
-    const usersPath = path.join(process.cwd(), 'data', 'users.json');
+    const usersPath = path.join(process.cwd(), 'data', 'users', 'users.json');
     
     // Create users.json if it doesn't exist
     try {
