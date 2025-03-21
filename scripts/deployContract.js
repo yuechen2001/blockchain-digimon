@@ -8,68 +8,81 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function main() {
-    console.log("Deploying DigimonMarketplace contract...");
-
-    // Get the network
-    const network = await ethers.provider.getNetwork();
-    console.log(`Deploying to network: ${network.name} (chainId: ${network.chainId})`);
-
-    // Get the deployer's address
+    console.log("Deploying Digimon contracts...");
     const [deployer] = await ethers.getSigners();
-    console.log(`Deploying with account: ${deployer.address}`);
+    const network = await ethers.provider.getNetwork();
 
-    // Deploy the contract
+    // Deploy DigimonToken
+    const DigimonToken = await ethers.getContractFactory("DigimonToken");
+    const digimonToken = await DigimonToken.deploy("DigimonToken", "DIGI");
+    await digimonToken.waitForDeployment();
+    const tokenAddress = await digimonToken.getAddress();
+    console.log(`DigimonToken deployed to: ${tokenAddress}`);
+
+    // Deploy DigimonMarketplace
     const DigimonMarketplace = await ethers.getContractFactory("DigimonMarketplace");
-    const digimonMarketplace = await DigimonMarketplace.deploy(deployer.address);
+    const digimonMarketplace = await DigimonMarketplace.deploy(deployer.address, tokenAddress);
     await digimonMarketplace.waitForDeployment();
+    const marketplaceAddress = await digimonMarketplace.getAddress();
+    console.log(`DigimonMarketplace deployed to: ${marketplaceAddress}`);
 
-    const address = await digimonMarketplace.getAddress();
-    console.log(`DigimonMarketplace deployed to: ${address}`);
+    // Grant MINTER_ROLE to Marketplace
+    const MINTER_ROLE = await digimonToken.MINTER_ROLE();
+    await digimonToken.grantRole(MINTER_ROLE, marketplaceAddress);
 
-    // Update the contract address in .env file
-    const envPath = path.join(__dirname, '..', '.env');
-    let envContent = fs.readFileSync(envPath, 'utf8');
-    if (envContent.includes('NEXT_PUBLIC_CONTRACT_ADDRESS=')) {
-        envContent = envContent.replace(
-            /NEXT_PUBLIC_CONTRACT_ADDRESS=.*/,
-            `NEXT_PUBLIC_CONTRACT_ADDRESS='${address}'`
-        );
-    } else {
-        envContent += `\nNEXT_PUBLIC_CONTRACT_ADDRESS='${address}'`;
-    }    
-    fs.writeFileSync(envPath, envContent);
-    console.log(`Contract address updated in .env file`);
-
-    // Update the contract ABI in the ABI folder
-    const abiFileContent = `export const DIGIMON_MARKETPLACE_ABI = ${JSON.stringify(DigimonMarketplace.interface.format('json'), null, 2)};`;
+    // Save contract addresses
+    const contractAddresses = {
+        DigimonToken: tokenAddress,
+        DigimonMarketplace: marketplaceAddress,
+        networkName: network.name,
+        deployedAt: new Date().toISOString()
+    };
     
-    // Ensure the abi directory exists
-    const abiDir = path.join(__dirname, '..', 'data', 'abi');
-    if (!fs.existsSync(abiDir)){
-        fs.mkdirSync(abiDir, { recursive: true });
+    const srcConfigDir = path.join(__dirname, '../src/config');
+    if (!fs.existsSync(srcConfigDir)) {
+        fs.mkdirSync(srcConfigDir, { recursive: true });
     }
     
-    fs.writeFileSync(path.join(abiDir, 'DigimonMarketplace.ts'), abiFileContent);
-    console.log(`Contract ABI updated in ABI folder`);
+    const addressesPath = path.join(srcConfigDir, 'addresses.json');
+    fs.writeFileSync(addressesPath, JSON.stringify(contractAddresses, null, 2));
+    
+    // Save ABIs
+    const abisDir = path.join(__dirname, '../src/abis');
+    if (!fs.existsSync(abisDir)) {
+        fs.mkdirSync(abisDir, { recursive: true });
+    }
+    
+    fs.writeFileSync(
+        path.join(abisDir, 'DigimonMarketplace.json'), 
+        JSON.stringify(DigimonMarketplace.interface.format('json'), null, 2)
+    );
+    
+    fs.writeFileSync(
+        path.join(abisDir, 'Token.json'), 
+        JSON.stringify(DigimonToken.interface.format('json'), null, 2)
+    );
 
-    // Verify the contract if we're on a testnet or mainnet
+    // Verify contracts on non-local networks
     if (network.name !== 'hardhat' && network.name !== 'localhost') {
-        console.log('Waiting for block confirmations...');
-        const deploymentReceipt = await digimonMarketplace.deploymentTransaction().wait(5);
+        await digimonMarketplace.deploymentTransaction().wait(5);
         
-        console.log('Verifying contract...');
         try {
             await run('verify:verify', {
-                address: address,
-                constructorArguments: [deployer.address],
+                address: tokenAddress,
+                constructorArguments: ["DigimonToken", "DIGI"],
             });
-            console.log('Contract verified successfully');
+            
+            await run('verify:verify', {
+                address: marketplaceAddress,
+                constructorArguments: [deployer.address, tokenAddress],
+            });
+            console.log('Contracts verified successfully');
         } catch (error) {
-            console.log('Error verifying contract:', error.message);
+            console.log('Error verifying contracts:', error.message);
         }
     }
 
-    return digimonMarketplace;
+    return { digimonToken, digimonMarketplace };
 }
 
 main()
