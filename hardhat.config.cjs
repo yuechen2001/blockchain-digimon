@@ -6,8 +6,8 @@ require("dotenv").config();
 const { MORALIS_NODE_URL, PRIVATE_KEY } = process.env;
 
 module.exports = {
-    solidity: "0.8.28",
-    // defaultNetwork: "sepolia",
+    solidity: "0.8.22",
+    defaultNetwork: "hardhat",
     paths: {
         sources: "./contracts",
         artifacts: "./artifacts",
@@ -24,4 +24,7 @@ module.exports = {
             ],
         },
     },
+    logger: {
+        showLogs: true
+    }
 }
