@@ -1,0 +1,227 @@
+{
+  "id": 24,
+  "name": "Tunomon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Tunomon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 1,
+      "attribute": "Data"
+    },
+    {
+      "id": 2,
+      "attribute": "Free"
+    }
+  ],
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "プニモンの頭部の触手の１つが硬化した小型デジモン。プニモンから、より動物的進化をとげ、フサフサな体毛に覆われている。まだまだ遊びたい盛りで、いたずら好きな性格だが、闘争本能は目覚めていない。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "A tiny Digimon that hardened one of the feelers on its head as Punimon. From Punimon, it has accomplished a more animal-like evolution, and is covered in tufty body hair. It is still at the peak of playfulness, and it has a prank-loving personality, but its combat instinct has not awakened."
+    }
+  ],
+  "skills": [
+    {
+      "id": 47,
+      "skill": "San no Awa",
+      "translation": "Acid Bubbles",
+      "description": "Shoots bubble-like substances from its mouth."
+    },
+    {
+      "id": 48,
+      "skill": "Awa",
+      "translation": "Bubbles",
+      "description": "Spits out bubbles from its mouth."
+    }
+  ],
+  "priorEvolutions": [
+    {
+      "id": 100,
+      "digimon": "Pitchmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pitchmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/100"
+    },
+    {
+      "id": 30,
+      "digimon": "Punimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Punimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/30"
+    },
+    {
+      "id": 210,
+      "digimon": "Yukimi Botamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Yukimi_Botamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/210"
+    }
+  ],
+  "nextEvolutions": [
+    {
+      "id": 4,
+      "digimon": "Betamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Betamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/4"
+    },
+    {
+      "id": 15,
+      "digimon": "Elecmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Elecmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/15"
+    },
+    {
+      "id": 16,
+      "digimon": "Gabumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/16"
+    },
+    {
+      "id": 891,
+      "digimon": "Dracomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Dracomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/891"
+    },
+    {
+      "id": 763,
+      "digimon": "Dracumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Dracumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/763"
+    },
+    {
+      "id": 307,
+      "digimon": "Gabumon (Black)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/307"
+    },
+    {
+      "id": 663,
+      "digimon": "Gabumon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/663"
+    },
+    {
+      "id": 826,
+      "digimon": "Gaomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gaomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/826"
+    },
+    {
+      "id": 236,
+      "digimon": "Goburimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Goburimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/236"
+    },
+    {
+      "id": 117,
+      "digimon": "Gomamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gomamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/117"
+    },
+    {
+      "id": 1123,
+      "digimon": "Gumdramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gumdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1123"
+    },
+    {
+      "id": 244,
+      "digimon": "Hagurumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Hagurumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/244"
+    },
+    {
+      "id": 630,
+      "digimon": "Koemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Koemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/630"
+    },
+    {
+      "id": 126,
+      "digimon": "Kunemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Kunemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/126"
+    },
+    {
+      "id": 444,
+      "digimon": "Monodramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Monodramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/444"
+    },
+    {
+      "id": 214,
+      "digimon": "Penmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Penmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/214"
+    },
+    {
+      "id": 216,
+      "digimon": "Pico Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pico_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/216"
+    },
+    {
+      "id": 223,
+      "digimon": "Psychemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Psychemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/223"
+    },
+    {
+      "id": 109,
+      "digimon": "Shakomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Shakomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/109"
+    },
+    {
+      "id": 1109,
+      "digimon": "Shoutmon X7(Superior Mode)",
+      "condition": "with Every Digimon from the Digital World",
+      "image": "https://digi-api.com/images/digimon/w/Shoutmon_X7(Superior_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/1109"
+    },
+    {
+      "id": 349,
+      "digimon": "V-mon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/V-mon.png",
+      "url": "https://digi-api.com/api/v1/digimon/349"
+    },
+    {
+      "id": 1214,
+      "digimon": "Zubamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Zubamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1214"
+    }
+  ]
+}

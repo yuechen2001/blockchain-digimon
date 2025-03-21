@@ -1,9 +1,9 @@
 {
-  "id": 9,
-  "name": "Death Devimon",
+  "id": 12,
+  "name": "Death Tyranomon",
   "images": [
     {
-      "href": "https://digi-api.com/images/digimon/w/Death_Devimon.png",
+      "href": "https://digi-api.com/images/digimon/w/Death_Tyranomon.png",
       "transparent": false
     }
   ],
@@ -19,19 +19,19 @@
   ],
   "skills": [
     {
-      "id": 51,
-      "skill": "Death Knuckle",
+      "id": 52,
+      "skill": "Death Beam",
       "translation": "",
-      "description": "Extends its arm to attack."
+      "description": "Fires a beam from its mouth."
     }
   ],
   "priorEvolutions": [
     {
-      "id": 8,
-      "digimon": "Death Airdramon",
+      "id": 9,
+      "digimon": "Death Devimon",
       "condition": "",
-      "image": "https://digi-api.com/images/digimon/w/Death_Airdramon.png",
-      "url": "https://digi-api.com/api/v1/digimon/8"
+      "image": "https://digi-api.com/images/digimon/w/Death_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/9"
     },
     {
       "id": 13,
@@ -43,11 +43,11 @@
   ],
   "nextEvolutions": [
     {
-      "id": 12,
-      "digimon": "Death Tyranomon",
+      "id": 11,
+      "digimon": "Death Metal Greymon",
       "condition": "",
-      "image": "https://digi-api.com/images/digimon/w/Death_Tyranomon.png",
-      "url": "https://digi-api.com/api/v1/digimon/12"
+      "image": "https://digi-api.com/images/digimon/w/Death_Metal_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/11"
     },
     {
       "id": 13,

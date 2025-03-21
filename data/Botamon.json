@@ -28,5 +28,119 @@
       "field": "Nature Spirits",
       "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
     }
+  ],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "生まれたばかりのデジタルモンスター。スライム状の体の表面には、黒い産毛がびっしり生えている。生まれたてなので戦うことはできないが、口から泡のようなものを出して敵を威嚇する。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "A Digital Monster that was born just recently. On the surface of its slime-shaped body, it has grown thick, black fuzz. It is unable to battle as it has just been born, but it can produce bubble-like objects from its mouth to intimidate the enemy."
+    }
+  ],
+  "skills": [
+    {
+      "id": 47,
+      "skill": "San no Awa",
+      "translation": "Acid Bubbles",
+      "description": "Shoots bubble-like substances from its mouth."
+    },
+    {
+      "id": 48,
+      "skill": "Awa",
+      "translation": "Bubbles",
+      "description": "Spits out bubbles from its mouth."
+    }
+  ],
+  "priorEvolutions": [],
+  "nextEvolutions": [
+    {
+      "id": 2,
+      "digimon": "Airdramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Airdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/2"
+    },
+    {
+      "id": 263,
+      "digimon": "Agumon (Black)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/263"
+    },
+    {
+      "id": 814,
+      "digimon": "Budmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Budmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/814"
+    },
+    {
+      "id": 143,
+      "digimon": "Candmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Candmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/143"
+    },
+    {
+      "id": 36,
+      "digimon": "Koromon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Koromon.png",
+      "url": "https://digi-api.com/api/v1/digimon/36"
+    },
+    {
+      "id": 128,
+      "digimon": "Lady Devimon",
+      "condition": "Warp Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Lady_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/128"
+    },
+    {
+      "id": 313,
+      "digimon": "Lopmon",
+      "condition": "with Moonmon",
+      "image": "https://digi-api.com/images/digimon/w/Lopmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/313"
+    },
+    {
+      "id": 80,
+      "digimon": "Pagumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pagumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/80"
+    },
+    {
+      "id": 787,
+      "digimon": "Pinamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pinamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/787"
+    },
+    {
+      "id": 467,
+      "digimon": "Sakuyamon",
+      "condition": "Warp Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Sakuyamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/467"
+    },
+    {
+      "id": 86,
+      "digimon": "Tokomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tokomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/86"
+    },
+    {
+      "id": 837,
+      "digimon": "Wanyamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Wanyamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/837"
+    }
   ]
 }

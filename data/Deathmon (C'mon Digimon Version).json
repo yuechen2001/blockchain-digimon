@@ -1,0 +1,95 @@
+{
+  "id": 13,
+  "name": "Deathmon (C'mon Digimon Version)",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Deathmon_(C'mon_Digimon_Version).png",
+      "transparent": false
+    }
+  ],
+  "attributes": [],
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "fanmade",
+      "language": "jap",
+      "description": ""
+    }
+  ],
+  "skills": [],
+  "priorEvolutions": [
+    {
+      "id": 8,
+      "digimon": "Death Airdramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Airdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/8"
+    },
+    {
+      "id": 9,
+      "digimon": "Death Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/9"
+    },
+    {
+      "id": 10,
+      "digimon": "Death Meramon (C'mon Digimon Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Meramon_(C'mon_Digimon_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/10"
+    },
+    {
+      "id": 11,
+      "digimon": "Death Metal Greymon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Metal_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/11"
+    },
+    {
+      "id": 12,
+      "digimon": "Death Tyranomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Tyranomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/12"
+    }
+  ],
+  "nextEvolutions": [
+    {
+      "id": 8,
+      "digimon": "Death Airdramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Airdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/8"
+    },
+    {
+      "id": 9,
+      "digimon": "Death Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/9"
+    },
+    {
+      "id": 10,
+      "digimon": "Death Meramon (C'mon Digimon Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Meramon_(C'mon_Digimon_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/10"
+    },
+    {
+      "id": 11,
+      "digimon": "Death Metal Greymon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Metal_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/11"
+    },
+    {
+      "id": 12,
+      "digimon": "Death Tyranomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Tyranomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/12"
+    }
+  ]
+}

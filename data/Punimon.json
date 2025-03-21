@@ -1,0 +1,86 @@
+{
+  "id": 30,
+  "name": "Punimon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Punimon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 2,
+      "attribute": "Free"
+    },
+    {
+      "id": 1,
+      "attribute": "Data"
+    }
+  ],
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "生まれたての新種デジモン。ゲル状の赤い体はプニプニしていて、頭部には３つの触手のようなものが生えている。戦うことができず、酸性の強い泡をだして敵を威嚇する。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "A new kind of newborn Digimon. Its gelatinous red body is squishy, and there are three feeler-like things growing on its head. It is unable to battle, but it can produce resilient, acidic bubbles to intimidate its opponents."
+    }
+  ],
+  "skills": [
+    {
+      "id": 48,
+      "skill": "Awa",
+      "translation": "Bubbles",
+      "description": "Spits out bubbles from its mouth."
+    },
+    {
+      "id": 47,
+      "skill": "San no Awa",
+      "translation": "Acid Bubbles",
+      "description": "Shoots bubble-like substances from its mouth."
+    }
+  ],
+  "priorEvolutions": [],
+  "nextEvolutions": [
+    {
+      "id": 24,
+      "digimon": "Tunomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tunomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/24"
+    },
+    {
+      "id": 181,
+      "digimon": "Nyaromon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Nyaromon.png",
+      "url": "https://digi-api.com/api/v1/digimon/181"
+    },
+    {
+      "id": 215,
+      "digimon": "Peti Meramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Peti_Meramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/215"
+    },
+    {
+      "id": 222,
+      "digimon": "Plotmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Plotmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/222"
+    },
+    {
+      "id": 103,
+      "digimon": "Pukamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pukamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/103"
+    }
+  ]
+}

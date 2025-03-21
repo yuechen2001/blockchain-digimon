@@ -1,0 +1,95 @@
+{
+  "id": 42,
+  "name": "Bubbmon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Bubbmon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 2,
+      "attribute": "Free"
+    }
+  ],
+  "fields": [
+    {
+      "id": 2,
+      "field": "Nature Spirits",
+      "image": "https://digi-api.com/images/etc/fields/Nature_Spirits.png"
+    }
+  ],
+  "releaseDate": "1998",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "一見、ただの薄緑色の泡のようだが、自由に行動し豊かな表情を見せる泡型のデジモン。表面はまだ固まっていないため、防御力は無いに等しく戦闘には向いていない。口にくわえたおしゃぶりのように見える部分から、小型の泡を発生させ、無限に増殖していく。その増殖性は、かつてコンピュータウィルス開発に使用されかかったが、あまりに生命力が弱いため幸い実行されなかった。はかない命だが、懸命に生きる愛すべきデジモンベビー。体の中から発生させる粘着性の泡で外敵の動きを封じ、その間に逃げるのが得意。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "Although it looks like it is just pale green bubbles at first glance, it is a Bubble Digimon that can move freely and express a plethora of facial expressions. Because its surface has not hardened yet, its defensive power is nonexistent and it is equally unsuited for combat. From the portion that looks like a pacifier held in its mouth, it generates tiny bubbles, and proliferates them infinitely. As for that proliferation, at one point, it started being used for computer virus development, but because its life force was too weak, that was fortunately never implemented. Although its life is fleeting, it is a lovable Digimon Baby that lives earnestly. Its specialty is escaping while the intruder's movement is restricted by the adhesive bubbles it generates from within its body."
+    }
+  ],
+  "skills": [
+    {
+      "id": 201,
+      "skill": "Nenchakusei no Awa",
+      "translation": "Adhesive Bubbles",
+      "description": "Releases a sticky bubble to restrict its opponent's movement."
+    },
+    {
+      "id": 48,
+      "skill": "Awa",
+      "translation": "Bubbles",
+      "description": "Spits out bubbles from its mouth."
+    }
+  ],
+  "priorEvolutions": [],
+  "nextEvolutions": [
+    {
+      "id": 71,
+      "digimon": "Mochimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Mochimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/71"
+    },
+    {
+      "id": 181,
+      "digimon": "Nyaromon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Nyaromon.png",
+      "url": "https://digi-api.com/api/v1/digimon/181"
+    },
+    {
+      "id": 79,
+      "digimon": "Otamamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Otamamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/79"
+    },
+    {
+      "id": 225,
+      "digimon": "Pyocomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pyocomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/225"
+    },
+    {
+      "id": 1109,
+      "digimon": "Shoutmon X7(Superior Mode)",
+      "condition": "with Every Digimon from the Digital World",
+      "image": "https://digi-api.com/images/digimon/w/Shoutmon_X7(Superior_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/1109"
+    },
+    {
+      "id": 84,
+      "digimon": "Tanemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tanemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/84"
+    }
+  ]
+}
