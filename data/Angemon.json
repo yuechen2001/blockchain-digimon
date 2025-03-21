@@ -24,5 +24,688 @@
       "field": "Wind Guardians",
       "image": "https://digi-api.com/images/etc/fields/Wind_Guardians.png"
     }
+  ],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "光り輝く６枚の翼と、神々しいまでの純白の衣を身に纏った天使デジモン。完全なる善の存在であり、幸福をもたらすデジモンと呼ばれているが、悪に対しては非常に冷徹で完全に相手が消滅するまで、攻撃を止めることはない。デジタルワールドが幾度となく危機に見舞われたとき、同種属のデジモンを率いて降臨したと伝えられており、ダークサイドに引き込まれたデビモンも、もともとは同種族であった。必殺技は黄金に輝く拳で相手を攻撃する『ヘブンズナックル』。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "An Angel Digimon with six shining wings, whose body is clad in cloth so pure white as to be divine. It is a being of perfected virtue, and although it is called a Digimon that brings happiness, when confronting evil it does not stop attacking, with extreme composure, until the opponent is completely annihilated. On the countless times when the Digital World is visited by a crisis, it is told that it descends to lead Digimon of the same genus, and Devimon, which was won over to the Dark Side, was originally of the same species. Its Special Move is striking the opponent with its fist shining gold (Heaven's Knuckle)."
+    }
+  ],
+  "skills": [
+    {
+      "id": 26,
+      "skill": "Heaven's Knuckle",
+      "translation": "",
+      "description": "Strikes the opponent with its fist shining gold. Gathers holy power in its fist and shoots a beam of holy light from it."
+    },
+    {
+      "id": 27,
+      "skill": "Holy Rod",
+      "translation": "",
+      "description": "Hits the opponent with its glowing Holy Rod."
+    },
+    {
+      "id": 28,
+      "skill": "God Typhoon",
+      "translation": "",
+      "description": "Spins its Holy Rod and/or itself to create a tornado."
+    },
+    {
+      "id": 29,
+      "skill": "Angel Slam",
+      "translation": "",
+      "description": "Uses its Holy Rod to pick up an enemy and slam them into the ground."
+    },
+    {
+      "id": 30,
+      "skill": "Staff Sweep",
+      "translation": "",
+      "description": "Trips the opponent with its Holy Rod."
+    },
+    {
+      "id": 31,
+      "skill": "Halo Attack",
+      "translation": "",
+      "description": "Spins through the air swinging its Holy Rod."
+    },
+    {
+      "id": 32,
+      "skill": "Glide",
+      "translation": "",
+      "description": "Flaps its wings in the air to slow its descent."
+    },
+    {
+      "id": 33,
+      "skill": "Holy Shot",
+      "translation": "",
+      "description": "Fires a bullet of holy energy from its spinning rod."
+    }
+  ],
+  "priorEvolutions": [
+    {
+      "id": 1,
+      "digimon": "Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1"
+    },
+    {
+      "id": 799,
+      "digimon": "Agumon (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/799"
+    },
+    {
+      "id": 263,
+      "digimon": "Agumon (Black)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/263"
+    },
+    {
+      "id": 800,
+      "digimon": "Agumon (Black) (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(Black)_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/800"
+    },
+    {
+      "id": 634,
+      "digimon": "Agumon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/634"
+    },
+    {
+      "id": 271,
+      "digimon": "Armadimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Armadimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/271"
+    },
+    {
+      "id": 136,
+      "digimon": "Bakumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Bakumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/136"
+    },
+    {
+      "id": 148,
+      "digimon": "Clear Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Clear_Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/148"
+    },
+    {
+      "id": 15,
+      "digimon": "Elecmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Elecmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/15"
+    },
+    {
+      "id": 162,
+      "digimon": "Floramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Floramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/162"
+    },
+    {
+      "id": 16,
+      "digimon": "Gabumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/16"
+    },
+    {
+      "id": 307,
+      "digimon": "Gabumon (Black)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/307"
+    },
+    {
+      "id": 663,
+      "digimon": "Gabumon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/663"
+    },
+    {
+      "id": 826,
+      "digimon": "Gaomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gaomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/826"
+    },
+    {
+      "id": 34,
+      "digimon": "Greymon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/34"
+    },
+    {
+      "id": 399,
+      "digimon": "Hawkmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Hawkmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/399"
+    },
+    {
+      "id": 482,
+      "digimon": "Impmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Impmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/482"
+    },
+    {
+      "id": 866,
+      "digimon": "Kudamon (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Kudamon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/866"
+    },
+    {
+      "id": 436,
+      "digimon": "Lucemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Lucemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/436"
+    },
+    {
+      "id": 567,
+      "digimon": "Neamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Neamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/567"
+    },
+    {
+      "id": 81,
+      "digimon": "Palmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Palmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/81"
+    },
+    {
+      "id": 690,
+      "digimon": "Palmon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Palmon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/690"
+    },
+    {
+      "id": 98,
+      "digimon": "Patamon",
+      "condition": "with or without Piyomon",
+      "image": "https://digi-api.com/images/digimon/w/Patamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/98"
+    },
+    {
+      "id": 842,
+      "digimon": "Pawn Chessmon (White)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pawn_Chessmon_(White).png",
+      "url": "https://digi-api.com/api/v1/digimon/842"
+    },
+    {
+      "id": 216,
+      "digimon": "Pico Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pico_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/216"
+    },
+    {
+      "id": 101,
+      "digimon": "Piyomon",
+      "condition": "with or without Patamon",
+      "image": "https://digi-api.com/images/digimon/w/Piyomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/101"
+    },
+    {
+      "id": 222,
+      "digimon": "Plotmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Plotmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/222"
+    },
+    {
+      "id": 708,
+      "digimon": "Plotmon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Plotmon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/708"
+    },
+    {
+      "id": 223,
+      "digimon": "Psychemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Psychemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/223"
+    },
+    {
+      "id": 108,
+      "digimon": "Sukamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Sukamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/108"
+    },
+    {
+      "id": 341,
+      "digimon": "Terriermon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Terriermon.png",
+      "url": "https://digi-api.com/api/v1/digimon/341"
+    },
+    {
+      "id": 349,
+      "digimon": "V-mon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/V-mon.png",
+      "url": "https://digi-api.com/api/v1/digimon/349"
+    },
+    {
+      "id": 356,
+      "digimon": "Wormmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Wormmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/356"
+    },
+    {
+      "id": 933,
+      "digimon": "Chikurimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Chikurimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/933"
+    }
+  ],
+  "nextEvolutions": [
+    {
+      "id": 129,
+      "digimon": "Aero V-dramon",
+      "condition": "with Birdramon or V-dramon",
+      "image": "https://digi-api.com/images/digimon/w/Aero_V-dramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/129"
+    },
+    {
+      "id": 414,
+      "digimon": "Andiramon (Deva)",
+      "condition": "with or without Tailmon or Witchmon",
+      "image": "https://digi-api.com/images/digimon/w/Andiramon_(Deva).png",
+      "url": "https://digi-api.com/api/v1/digimon/414"
+    },
+    {
+      "id": 37,
+      "digimon": "Andromon",
+      "condition": "with or without Clockmon, Revolmon, or Tankmon",
+      "image": "https://digi-api.com/images/digimon/w/Andromon.png",
+      "url": "https://digi-api.com/api/v1/digimon/37"
+    },
+    {
+      "id": 38,
+      "digimon": "Angewomon",
+      "condition": "with or without Witchmon, Tyranomon, Dobermon, Monochromon, Starmon, certain Digimon from the Pendulum Ver.20th series, or certain Vaccine Adult, any Data Adult, or certain Vaccine Perfect Digimon from the Digimon Pendulum",
+      "image": "https://digi-api.com/images/digimon/w/Angewomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/38"
+    },
+    {
+      "id": 269,
+      "digimon": "Archnemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Archnemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/269"
+    },
+    {
+      "id": 133,
+      "digimon": "Asuramon",
+      "condition": "with Greymon, Leomon, or Igamon",
+      "image": "https://digi-api.com/images/digimon/w/Asuramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/133"
+    },
+    {
+      "id": 918,
+      "digimon": "Baalmon",
+      "condition": "with Porcupamon",
+      "image": "https://digi-api.com/images/digimon/w/Baalmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/918"
+    },
+    {
+      "id": 507,
+      "digimon": "Bastemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Bastemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/507"
+    },
+    {
+      "id": 924,
+      "digimon": "Beelzebumon (2010 Anime Version)",
+      "condition": "with Piemon and Karatenmon",
+      "image": "https://digi-api.com/images/digimon/w/Beelzebumon_(2010_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/924"
+    },
+    {
+      "id": 137,
+      "digimon": "Big Mamemon",
+      "condition": "with Guardromon or Mechanorimon",
+      "image": "https://digi-api.com/images/digimon/w/Big_Mamemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/137"
+    },
+    {
+      "id": 140,
+      "digimon": "Blue Meramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Blue_Meramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/140"
+    },
+    {
+      "id": 535,
+      "digimon": "Chackmon",
+      "condition": "with the Human Spirit of Ice",
+      "image": "https://digi-api.com/images/digimon/w/Chackmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/535"
+    },
+    {
+      "id": 146,
+      "digimon": "Chimairamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Chimairamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/146"
+    },
+    {
+      "id": 150,
+      "digimon": "Cyberdramon",
+      "condition": "with Greymon or Thunderballmon",
+      "image": "https://digi-api.com/images/digimon/w/Cyberdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/150"
+    },
+    {
+      "id": 152,
+      "digimon": "Death Meramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Meramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/152"
+    },
+    {
+      "id": 14,
+      "digimon": "Devimon",
+      "condition": "Death Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/14"
+    },
+    {
+      "id": 1203,
+      "digimon": "Duramon",
+      "condition": "with Bao Hackmon, Targetmon, or a Vaccine or Free Attribute Adult Digimon from the Digimon Pendulum Z",
+      "image": "https://digi-api.com/images/digimon/w/Duramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1203"
+    },
+    {
+      "id": 165,
+      "digimon": "Garudamon",
+      "condition": "with or without V-dramon, Togemon, or Kiwimon",
+      "image": "https://digi-api.com/images/digimon/w/Garudamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/165"
+    },
+    {
+      "id": 118,
+      "digimon": "Gorimon",
+      "condition": "with Piyomon",
+      "image": "https://digi-api.com/images/digimon/w/Gorimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/118"
+    },
+    {
+      "id": 915,
+      "digimon": "Groundramon",
+      "condition": "with Coredramon Blue",
+      "image": "https://digi-api.com/images/digimon/w/Groundramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/915"
+    },
+    {
+      "id": 245,
+      "digimon": "Hangyomon",
+      "condition": "with Gesomon",
+      "image": "https://digi-api.com/images/digimon/w/Hangyomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/245"
+    },
+    {
+      "id": 618,
+      "digimon": "Hippogriffomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Hippogriffomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/618"
+    },
+    {
+      "id": 121,
+      "digimon": "Holy Angemon",
+      "condition": "with or without the Crest of Hope, Baalmon, XV-mon, or Ankylomon",
+      "image": "https://digi-api.com/images/digimon/w/Holy_Angemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/121"
+    },
+    {
+      "id": 122,
+      "digimon": "Holy Angemon(Priest Mode)",
+      "condition": "with or without Yukidarumon, Yukimi Botamon, and Baihumon",
+      "image": "https://digi-api.com/images/digimon/w/Holy_Angemon(Priest_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/122"
+    },
+    {
+      "id": 248,
+      "digimon": "Hououmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Hououmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/248"
+    },
+    {
+      "id": 125,
+      "digimon": "Jyagamon",
+      "condition": "with Kabuterimon, Tailmon, or Tortamon",
+      "image": "https://digi-api.com/images/digimon/w/Jyagamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/125"
+    },
+    {
+      "id": 128,
+      "digimon": "Lady Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Lady_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/128"
+    },
+    {
+      "id": 166,
+      "digimon": "Lilimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Lilimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/166"
+    },
+    {
+      "id": 556,
+      "digimon": "Lucemon(Falldown Mode)",
+      "condition": "with or without Devimon or Lucemon, Evilmon and Minotaurmon Adult",
+      "image": "https://digi-api.com/images/digimon/w/Lucemon(Falldown_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/556"
+    },
+    {
+      "id": 315,
+      "digimon": "Magnamon",
+      "condition": "with V-mon and Ankylomon",
+      "image": "https://digi-api.com/images/digimon/w/Magnamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/315"
+    },
+    {
+      "id": 316,
+      "digimon": "Maildramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Maildramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/316"
+    },
+    {
+      "id": 1326,
+      "digimon": "Manticoremon",
+      "condition": "with a Data or Virus Attribute Adult Digimon from the Digimon Pendulum Z",
+      "image": "https://digi-api.com/images/digimon/w/Manticoremon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1326"
+    },
+    {
+      "id": 1327,
+      "digimon": "Marin Chimairamon",
+      "condition": "with Ankylomon",
+      "image": "https://digi-api.com/images/digimon/w/Marin_Chimairamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1327"
+    },
+    {
+      "id": 66,
+      "digimon": "Megadramon",
+      "condition": "with Coredramon Blue",
+      "image": "https://digi-api.com/images/digimon/w/Megadramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/66"
+    },
+    {
+      "id": 20,
+      "digimon": "Metal Mamemon",
+      "condition": "with certain Digimon from the Pendulum Ver.20th series, or any Vaccine Adult Digimon from the Digimon Pendulum",
+      "image": "https://digi-api.com/images/digimon/w/Metal_Mamemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/20"
+    },
+    {
+      "id": 568,
+      "digimon": "Neo Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Neo_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/568"
+    },
+    {
+      "id": 331,
+      "digimon": "Paildramon",
+      "condition": "with or without Garurumon, Garurumon Black, or Garurumon X-Antibody",
+      "image": "https://digi-api.com/images/digimon/w/Paildramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/331"
+    },
+    {
+      "id": 99,
+      "digimon": "Piccolomon",
+      "condition": "with or without Gekomon or Kuwagamon",
+      "image": "https://digi-api.com/images/digimon/w/Piccolomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/99"
+    },
+    {
+      "id": 220,
+      "digimon": "Platinum Sukamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Platinum_Sukamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/220"
+    },
+    {
+      "id": 224,
+      "digimon": "Pumpmon",
+      "condition": "with Bakemon, Devimon, or Dokugumon",
+      "image": "https://digi-api.com/images/digimon/w/Pumpmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/224"
+    },
+    {
+      "id": 849,
+      "digimon": "Rize Greymon",
+      "condition": "with Growmon or Reppamon",
+      "image": "https://digi-api.com/images/digimon/w/Rize_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/849"
+    },
+    {
+      "id": 1185,
+      "digimon": "Savior Hackmon",
+      "condition": "with or without Zubaeagermon",
+      "image": "https://digi-api.com/images/digimon/w/Savior_Hackmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1185"
+    },
+    {
+      "id": 384,
+      "digimon": "Seraphimon",
+      "condition": "Warp Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Seraphimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/384"
+    },
+    {
+      "id": 387,
+      "digimon": "Shakkoumon",
+      "condition": "with or without Armadimon or Ankylomon",
+      "image": "https://digi-api.com/images/digimon/w/Shakkoumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/387"
+    },
+    {
+      "id": 32,
+      "digimon": "Skull Greymon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Skull_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/32"
+    },
+    {
+      "id": 448,
+      "digimon": "Taomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Taomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/448"
+    },
+    {
+      "id": 205,
+      "digimon": "Were Garurumon",
+      "condition": "with Garurumon, Hanumon, Meramon, or Wizarmon",
+      "image": "https://digi-api.com/images/digimon/w/Were_Garurumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/205"
+    },
+    {
+      "id": 94,
+      "digimon": "Whamon Perfect",
+      "condition": "with Coelamon, Ebidramon, Ikkakumon, Rukamon, or Seadramon",
+      "image": "https://digi-api.com/images/digimon/w/Whamon_Perfect.png",
+      "url": "https://digi-api.com/api/v1/digimon/94"
+    },
+    {
+      "id": 909,
+      "digimon": "Wingdramon",
+      "condition": "with Coredramon Green or Devidramon",
+      "image": "https://digi-api.com/images/digimon/w/Wingdramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/909"
+    },
+    {
+      "id": 26,
+      "digimon": "Vademon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Vademon.png",
+      "url": "https://digi-api.com/api/v1/digimon/26"
+    },
+    {
+      "id": 199,
+      "digimon": "Vamdemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Vamdemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/199"
+    },
+    {
+      "id": 567,
+      "digimon": "Neamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Neamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/567"
+    },
+    {
+      "id": 781,
+      "digimon": "Tyilinmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tyilinmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/781"
+    },
+    {
+      "id": 800,
+      "digimon": "Agumon (Black) (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(Black)_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/800"
+    }
   ]
 }

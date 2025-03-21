@@ -1,0 +1,17 @@
+{
+  "id": 23,
+  "name": "Ohakadamon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Ohakadamon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [],
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [],
+  "skills": [],
+  "priorEvolutions": [],
+  "nextEvolutions": []
+}

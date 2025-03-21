@@ -1,0 +1,365 @@
+{
+  "id": 36,
+  "name": "Koromon",
+  "images": [
+    {
+      "href": "https://digi-api.com/images/digimon/w/Koromon.png",
+      "transparent": false
+    }
+  ],
+  "attributes": [
+    {
+      "id": 1,
+      "attribute": "Data"
+    },
+    {
+      "id": 2,
+      "attribute": "Free"
+    }
+  ],
+  "fields": [
+    {
+      "id": 9,
+      "field": "Virus Busters",
+      "image": "https://digi-api.com/images/etc/fields/Virus_Busters.png"
+    }
+  ],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "reference_book",
+      "language": "jap",
+      "description": "表面を覆っていた産毛が抜け、体も一回り大きくなった小型デジモン。活発に動き回れるようになったが、まだ戦うことはできない。口から泡を出して敵を威嚇する。"
+    },
+    {
+      "origin": "reference_book",
+      "language": "en_us",
+      "description": "A tiny Digimon that shed the fuzz covering its surface, and whose body grew even bigger. Although it has become able to move around more actively, it is still unable to battle. It can produce bubbles from its mouth to intimidate opponents."
+    }
+  ],
+  "skills": [
+    {
+      "id": 48,
+      "skill": "Awa",
+      "translation": "Bubbles",
+      "description": "Spits out bubbles from its mouth."
+    },
+    {
+      "id": 47,
+      "skill": "San no Awa",
+      "translation": "Acid Bubbles",
+      "description": "Shoots bubble-like substances from its mouth."
+    },
+    {
+      "id": 171,
+      "skill": "Poyoyon Tackle",
+      "translation": "Soft Tackle",
+      "description": "Softly tackles its opponent with its whole body."
+    }
+  ],
+  "priorEvolutions": [
+    {
+      "id": 6,
+      "digimon": "Botamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Botamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/6"
+    },
+    {
+      "id": 173,
+      "digimon": "Mokumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Mokumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/173"
+    },
+    {
+      "id": 182,
+      "digimon": "Nyokimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Nyokimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/182"
+    },
+    {
+      "id": 95,
+      "digimon": "Yuramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Yuramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/95"
+    },
+    {
+      "id": 97,
+      "digimon": "Zurumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Zurumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/97"
+    }
+  ],
+  "nextEvolutions": [
+    {
+      "id": 1,
+      "digimon": "Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1"
+    },
+    {
+      "id": 4,
+      "digimon": "Betamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Betamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/4"
+    },
+    {
+      "id": 16,
+      "digimon": "Gabumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gabumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/16"
+    },
+    {
+      "id": 799,
+      "digimon": "Agumon (2006 Anime Version)",
+      "condition": "with or without Burst Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/799"
+    },
+    {
+      "id": 263,
+      "digimon": "Agumon (Black)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/263"
+    },
+    {
+      "id": 801,
+      "digimon": "Agumon Hakase",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_Hakase.png",
+      "url": "https://digi-api.com/api/v1/digimon/801"
+    },
+    {
+      "id": 634,
+      "digimon": "Agumon (X-Antibody)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Agumon_(X-Antibody).png",
+      "url": "https://digi-api.com/api/v1/digimon/634"
+    },
+    {
+      "id": 815,
+      "digimon": "Bushi Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Bushi_Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/815"
+    },
+    {
+      "id": 143,
+      "digimon": "Candmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Candmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/143"
+    },
+    {
+      "id": 820,
+      "digimon": "Dot Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Dot_Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/820"
+    },
+    {
+      "id": 891,
+      "digimon": "Dracomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Dracomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/891"
+    },
+    {
+      "id": 824,
+      "digimon": "Falcomon (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Falcomon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/824"
+    },
+    {
+      "id": 826,
+      "digimon": "Gaomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Gaomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/826"
+    },
+    {
+      "id": 857,
+      "digimon": "Geo Greymon",
+      "condition": "Full Burst Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Geo_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/857"
+    },
+    {
+      "id": 236,
+      "digimon": "Goburimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Goburimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/236"
+    },
+    {
+      "id": 477,
+      "digimon": "Guilmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Guilmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/477"
+    },
+    {
+      "id": 1156,
+      "digimon": "Hackmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Hackmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1156"
+    },
+    {
+      "id": 1292,
+      "digimon": "Jazamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Jazamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1292"
+    },
+    {
+      "id": 817,
+      "digimon": "Kamemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Kamemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/817"
+    },
+    {
+      "id": 866,
+      "digimon": "Kudamon (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Kudamon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/866"
+    },
+    {
+      "id": 126,
+      "digimon": "Kunemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Kunemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/126"
+    },
+    {
+      "id": 867,
+      "digimon": "Lalamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Lalamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/867"
+    },
+    {
+      "id": 436,
+      "digimon": "Lucemon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Lucemon.png",
+      "url": "https://digi-api.com/api/v1/digimon/436"
+    },
+    {
+      "id": 73,
+      "digimon": "Monochromon",
+      "condition": "with Greymon 2010 Anime Version",
+      "image": "https://digi-api.com/images/digimon/w/Monochromon.png",
+      "url": "https://digi-api.com/api/v1/digimon/73"
+    },
+    {
+      "id": 444,
+      "digimon": "Monodramon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Monodramon.png",
+      "url": "https://digi-api.com/api/v1/digimon/444"
+    },
+    {
+      "id": 841,
+      "digimon": "Pawn Chessmon (Black)",
+      "condition": "Burst Evolution",
+      "image": "https://digi-api.com/images/digimon/w/Pawn_Chessmon_(Black).png",
+      "url": "https://digi-api.com/api/v1/digimon/841"
+    },
+    {
+      "id": 216,
+      "digimon": "Pico Devimon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Pico_Devimon.png",
+      "url": "https://digi-api.com/api/v1/digimon/216"
+    },
+    {
+      "id": 983,
+      "digimon": "Shoutmon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Shoutmon.png",
+      "url": "https://digi-api.com/api/v1/digimon/983"
+    },
+    {
+      "id": 1109,
+      "digimon": "Shoutmon X7(Superior Mode)",
+      "condition": "with Every Digimon from the Digital World",
+      "image": "https://digi-api.com/images/digimon/w/Shoutmon_X7(Superior_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/1109"
+    },
+    {
+      "id": 88,
+      "digimon": "Tortamon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tortamon.png",
+      "url": "https://digi-api.com/api/v1/digimon/88"
+    },
+    {
+      "id": 196,
+      "digimon": "Toy Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Toy_Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/196"
+    },
+    {
+      "id": 91,
+      "digimon": "Tyumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Tyumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/91"
+    },
+    {
+      "id": 349,
+      "digimon": "V-mon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/V-mon.png",
+      "url": "https://digi-api.com/api/v1/digimon/349"
+    },
+    {
+      "id": 1199,
+      "digimon": "Vorvomon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Vorvomon.png",
+      "url": "https://digi-api.com/api/v1/digimon/1199"
+    },
+    {
+      "id": 202,
+      "digimon": "War Greymon",
+      "condition": "with Agumon, Greymon and Metal Greymon",
+      "image": "https://digi-api.com/images/digimon/w/War_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/202"
+    },
+    {
+      "id": 209,
+      "digimon": "Yuki Agumon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Yuki_Agumon.png",
+      "url": "https://digi-api.com/api/v1/digimon/209"
+    },
+    {
+      "id": 840,
+      "digimon": "Yuki Agumon (2006 Anime Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Yuki_Agumon_(2006_Anime_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/840"
+    },
+    {
+      "id": 855,
+      "digimon": "Shine Greymon(Burst Mode)",
+      "condition": "with Shine Greymon, Rize Greymon, Geo Greymon, and Chronomon Holy Mode",
+      "image": "https://digi-api.com/images/digimon/w/Shine_Greymon(Burst_Mode).png",
+      "url": "https://digi-api.com/api/v1/digimon/855"
+    }
+  ]
+}

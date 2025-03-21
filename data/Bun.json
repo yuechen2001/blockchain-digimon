@@ -8,5 +8,23 @@
     }
   ],
   "attributes": [],
-  "fields": []
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "fanmade",
+      "language": "jap",
+      "description": ""
+    }
+  ],
+  "skills": [
+    {
+      "id": 49,
+      "skill": "Spinning Tail Cyclone",
+      "translation": "",
+      "description": "Spins its tail, propelling it towards the enemy."
+    }
+  ],
+  "priorEvolutions": [],
+  "nextEvolutions": []
 }

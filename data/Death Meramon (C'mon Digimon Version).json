@@ -8,5 +8,39 @@
     }
   ],
   "attributes": [],
-  "fields": []
+  "fields": [],
+  "releaseDate": "1997",
+  "descriptions": [
+    {
+      "origin": "fanmade",
+      "language": "jap",
+      "description": ""
+    }
+  ],
+  "skills": [],
+  "priorEvolutions": [
+    {
+      "id": 11,
+      "digimon": "Death Metal Greymon",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Death_Metal_Greymon.png",
+      "url": "https://digi-api.com/api/v1/digimon/11"
+    },
+    {
+      "id": 13,
+      "digimon": "Deathmon (C'mon Digimon Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Deathmon_(C'mon_Digimon_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/13"
+    }
+  ],
+  "nextEvolutions": [
+    {
+      "id": 13,
+      "digimon": "Deathmon (C'mon Digimon Version)",
+      "condition": "",
+      "image": "https://digi-api.com/images/digimon/w/Deathmon_(C'mon_Digimon_Version).png",
+      "url": "https://digi-api.com/api/v1/digimon/13"
+    }
+  ]
 }
