@@ -1,12 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
-import { DIGIMON_MARKETPLACE_ABI } from '../data/abi/DigimonMarketplace';
 import { useToast } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
+import DigimonMarketplaceABI from '../src/abis/DigimonMarketplace.json';
+import DigimonTokenABI from '../src/abis/Token.json';
 
 interface Web3ContextType {
   account: string | null;
@@ -14,7 +15,8 @@ interface Web3ContextType {
   isReconnecting: boolean;
   isAuthenticated: boolean;
   isConnected: boolean;
-  contract: ethers.Contract | null;
+  marketplaceContract: ethers.Contract | null;
+  tokenContract: ethers.Contract | null;
   provider: ethers.BrowserProvider | null;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
@@ -28,7 +30,8 @@ const Web3Context = createContext<Web3ContextType>({
   isReconnecting: false,
   isAuthenticated: false,
   isConnected: false,
-  contract: null,
+  marketplaceContract: null,
+  tokenContract: null,
   provider: null,
   connect: async () => {},
   disconnect: async () => {},
@@ -39,7 +42,8 @@ const Web3Context = createContext<Web3ContextType>({
 export const useWeb3Context = () => useContext(Web3Context);
 
 export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [contract, setContract] = useState<ethers.Contract | null>(null);
+  const [marketplaceContract, setMarketplaceContract] = useState<ethers.Contract | null>(null);
+  const [tokenContract, setTokenContract] = useState<ethers.Contract | null>(null);
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isReconnecting, setIsReconnecting] = useState(false);
@@ -53,26 +57,46 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const initializeContract = useCallback(async (provider: ethers.BrowserProvider) => {
     try {
-      const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      if (!contractAddress) {
-        throw new Error('Contract address not found in environment variables');
+      // Load contract addresses from src/config/addresses.json
+      const addressesModule = await import('../src/config/addresses.json');
+      const marketplaceAddress = addressesModule.DigimonMarketplace;
+      const tokenAddress = addressesModule.DigimonToken;
+      
+      console.log('Loaded contract addresses:', {
+        marketplace: marketplaceAddress,
+        token: tokenAddress
+      });
+      
+      if (!marketplaceAddress || !tokenAddress) {
+        throw new Error('Contract addresses not found');
       }
 
-      console.log('Initializing contract with address:', contractAddress);
       const signer = await provider.getSigner();
-      const contract = new ethers.Contract(
-        contractAddress,
-        DIGIMON_MARKETPLACE_ABI,
+      
+      // Initialize marketplace contract
+      console.log('Initializing marketplace contract with address:', marketplaceAddress);
+      const marketplaceContract = new ethers.Contract(
+        marketplaceAddress,
+        DigimonMarketplaceABI,
+        signer
+      );
+      
+      // Initialize token contract
+      console.log('Initializing token contract with address:', tokenAddress);
+      const digimonTokenContract = new ethers.Contract(
+        tokenAddress,
+        DigimonTokenABI,
         signer
       );
 
-      setContract(contract);
+      setMarketplaceContract(marketplaceContract);
+      setTokenContract(digimonTokenContract);
       setProvider(provider);
       setConnectionError(null);
-      console.log('Contract initialized successfully');
+      console.log('Contracts initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize contract:', error);
-      setConnectionError('Failed to initialize contract');
+      console.error('Failed to initialize contracts:', error);
+      setConnectionError('Failed to initialize contracts');
       throw error;
     }
   }, []);
@@ -116,7 +140,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'UserRejectedRequestError') {
-        // Do not log this error
         toast({
           title: 'Connection Rejected',
           description: 'You rejected the connection request. Please try again.',
@@ -143,7 +166,8 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
   const disconnect = useCallback(async () => {
     try {
       await disconnectAsync();
-      setContract(null);
+      setMarketplaceContract(null);
+      setTokenContract(null);
       setProvider(null);
       setConnectionError(null);
     } catch (error) {
@@ -187,7 +211,8 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
         isReconnecting,
         isAuthenticated: !!session?.user,
         isConnected,
-        contract,
+        marketplaceContract,
+        tokenContract,
         provider,
         connect,
         disconnect,
