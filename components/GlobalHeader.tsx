@@ -22,7 +22,7 @@ import {
 import { useWeb3Context } from '../context/Web3Context';
 import { useAuth } from '../context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
-import { FaWallet, FaExclamationTriangle, FaChevronDown } from 'react-icons/fa';
+import { FaWallet, FaExclamationTriangle, FaChevronDown, FaStore, FaDragon, FaSignOutAlt } from 'react-icons/fa';
 
 export const GlobalHeader: React.FC = () => {
   const [mounted, setMounted] = useState(false);
@@ -41,6 +41,7 @@ export const GlobalHeader: React.FC = () => {
   const pathname = usePathname();
   const toast = useToast();
 
+  // Safely handle client-side only code
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -78,58 +79,8 @@ export const GlobalHeader: React.FC = () => {
     }
   };
 
-  // Only hide header on the landing page
-  if (pathname === '/') {
-    return null;
-  }
-
-  // Prevent hydration issues by not rendering wallet-dependent content until mounted
-  if (!mounted) {
-    return (
-      <Box
-        as="header"
-        position="fixed"
-        top={0}
-        left={0}
-        right={0}
-        bg="white"
-        boxShadow="sm"
-        zIndex={100}
-        py={4}
-        px={8}
-      >
-        <HStack justify="space-between" align="center">
-          <HStack spacing={4}>
-            <Button
-              variant={pathname === '/marketplace' ? 'solid' : 'ghost'}
-              colorScheme="blue"
-            >
-              Marketplace
-            </Button>
-            <Button
-              variant={pathname === '/my-listings' ? 'solid' : 'ghost'}
-              colorScheme="blue"
-            >
-              My Digimons
-            </Button>
-          </HStack>
-          <HStack spacing={4}>
-            <Button
-              colorScheme="blue"
-              disabled
-            >
-              <HStack spacing={2}>
-                <Spinner size="sm" />
-                <Text>Loading...</Text>
-              </HStack>
-            </Button>
-          </HStack>
-        </HStack>
-      </Box>
-    );
-  }
-
-  return (
+  // Server-side and initial client-side content
+  const content = (
     <>
       <Box
         as="header"
@@ -148,21 +99,36 @@ export const GlobalHeader: React.FC = () => {
             <Button
               variant={pathname === '/marketplace' ? 'solid' : 'ghost'}
               colorScheme="blue"
-              onClick={() => router.push('/marketplace')}
+              leftIcon={<Icon as={FaStore} />}
+              onClick={mounted ? () => router.push('/marketplace') : undefined}
+              isDisabled={!mounted}
             >
               Marketplace
             </Button>
             <Button
               variant={pathname === '/my-listings' ? 'solid' : 'ghost'}
               colorScheme="blue"
-              onClick={() => router.push('/my-listings')}
+              leftIcon={<Icon as={FaDragon} />}
+              onClick={mounted ? () => router.push('/my-listings') : undefined}
+              isDisabled={!mounted}
             >
               My Digimons
             </Button>
           </HStack>
 
           <HStack spacing={4}>
-            {connectionError ? (
+            {!mounted ? (
+              <Button
+                colorScheme="blue"
+                leftIcon={<Icon as={FaWallet} />}
+                isDisabled
+              >
+                <HStack spacing={2}>
+                  <Spinner size="sm" />
+                  <Text>Loading...</Text>
+                </HStack>
+              </Button>
+            ) : connectionError ? (
               <Text color="red.500" fontSize="sm">
                 <Icon as={FaExclamationTriangle} mr={2} />
                 {connectionError}
@@ -182,6 +148,7 @@ export const GlobalHeader: React.FC = () => {
                     onClick={handleFullLogout}
                     color="red.500"
                     disabled={isConnecting || isReconnecting}
+                    icon={<Icon as={FaSignOutAlt} />}
                   >
                     Logout & Disconnect Wallet
                   </MenuItem>
@@ -192,22 +159,24 @@ export const GlobalHeader: React.FC = () => {
                 colorScheme="blue"
                 leftIcon={<Icon as={FaWallet} />}
                 onClick={handleConnect}
-                disabled={isConnecting || isReconnecting}
+                isLoading={isConnecting || isReconnecting}
+                loadingText="Connecting..."
               >
-                {isConnecting || isReconnecting ? (
-                  <HStack spacing={2}>
-                    <Spinner size="sm" />
-                    <Text>Connecting...</Text>
-                  </HStack>
-                ) : (
-                  'Connect Wallet'
-                )}
+                Connect Wallet
               </Button>
             )}
           </HStack>
         </HStack>
       </Box>
-      <Box height="64px" />
+      {/* Spacer to push content below fixed header */}
+      <Box height="72px" />
     </>
   );
+
+  // Only hide header on the landing page
+  if (pathname === '/') {
+    return null;
+  }
+
+  return content;
 };
