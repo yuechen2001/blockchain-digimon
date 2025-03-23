@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { Box, Heading, Text, VStack, HStack, Badge, Divider, Button, useToast, Wrap, WrapItem, Spinner, useColorModeValue } from '@chakra-ui/react';
+import { Box, Heading, Text, VStack, HStack, Badge, Divider, Button, useToast, Wrap, WrapItem, useColorModeValue } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import { useWeb3Context } from '../context/Web3Context';
 import Digimon from '../shared/models/Digimon';
 import { IoWalletOutline, IoTimeOutline, IoPricetagOutline } from 'react-icons/io5';
+import { FaSpinner } from 'react-icons/fa';
 import TimeRemaining from './TimeRemaining';
 import { useRouter } from 'next/navigation';
 
@@ -28,7 +29,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
   const { digimon, tokenId, isListed, listingPrice, isOwner, seller, expiresAt, onPurchaseComplete } = props;
   const [mounted, setMounted] = useState(false);
   const [isBuying, setIsBuying] = useState(false);
-  const { marketplaceContract, account, provider } = useWeb3Context();
+  const { marketplaceContract, account } = useWeb3Context();
   const toast = useToast();
   const router = useRouter();
 
@@ -74,88 +75,57 @@ function DigimonDisplay(props: DigimonDisplayProps) {
   };
 
   // Handle buying a Digimon
-  const handleBuy = async () => {
-    if (!marketplaceContract || !account || !tokenId || !listingPrice) {
-      toast({
-        title: 'Error',
-        description: 'Please connect your wallet',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
+const handleBuy = useCallback(async () => {
+  if (!marketplaceContract || !account) {
+    toast.closeAll();
+    toast({
+      title: 'Wallet Error',
+      description: 'Please connect your wallet',
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+    });
+    return;
+  }
+
+  if (!tokenId || !listingPrice) {
+    toast.closeAll();
+    toast({
+      title: 'Data Error',
+      description: 'Token ID or listing price is missing',
+      status: 'error',
+      duration: 5000,
+      isClosable: true,
+    });
+    return;
+  }
+  
+  setIsBuying(true);
+  
+  try {
+    // listingPrice is already in ETH format, so we need to parse it back to Wei
+    let priceInWei = ethers.parseEther(listingPrice);
     
-    setIsBuying(true);
+    // Create loading toast and store its ID
+    toast.closeAll();
+    const loadingToastId = toast({
+      title: 'Processing Purchase',
+      description: 'Please confirm the transaction in your wallet...',
+      status: 'loading',
+      duration: null,
+      isClosable: true,
+    });
     
+    // Check token has listing
     try {
-      // listingPrice is already in ETH format, so we need to parse it back to Wei
-      let priceInWei = ethers.parseEther(listingPrice);
+      const [tokenListing, hasListing] = await marketplaceContract.getTokenListing(tokenId);
+      priceInWei = tokenListing[3];
       
-      // Check token has listing
-      try {
-        const [tokenListing, hasListing] = await marketplaceContract.getTokenListing(tokenId);
-        priceInWei = tokenListing[3];
-        
-        if (!hasListing) {
-          toast({
-            title: 'Listing Error',
-            description: 'This token doesn\'t have an active listing',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          });
-          setIsBuying(false);
-          return;
-        }
-        
-        // Extract useful info from listing
-        if (hasListing) {
-          // Check expiration
-          const now = Math.floor(Date.now() / 1000);
-          if (Number(tokenListing[6]) < now) {
-            toast({
-              title: 'Listing Expired',
-              description: 'This listing has expired',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
-            setIsBuying(false);
-            return;
-          }
-          
-          // Check active status
-          if (!tokenListing[4]) {
-            toast({
-              title: 'Listing Inactive',
-              description: 'This listing is no longer active',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
-            setIsBuying(false);
-            return;
-          }
-          
-          // Check if trying to buy own listing
-          if (tokenListing[2].toLowerCase() === account.toLowerCase()) {
-            toast({
-              title: 'Cannot Buy',
-              description: 'You cannot buy your own listing',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
-            setIsBuying(false);
-            return;
-          }
-        }
-      } catch (checkError) {
-        // Handle errors during pre-purchase checks
+      if (!hasListing) {
+        toast.close(loadingToastId);
         toast({
-          title: 'Error',
-          description: 'Failed to verify listing details',
+          title: 'Listing Error',
+          description: 'This token doesn\'t have an active listing',
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -164,57 +134,95 @@ function DigimonDisplay(props: DigimonDisplayProps) {
         return;
       }
       
-      const tx = await marketplaceContract.buyDigimon(tokenId, { value: priceInWei });
-      
-      // Create loading toast and store its ID
-      const loadingToastId = toast({
-        title: 'Buying Digimon',
-        description: 'Please wait while your Digimon is being purchased...',
-        status: 'loading',
-        duration: null,
-        isClosable: true,
-      });
-      
-      const receipt = await tx.wait();
-      
-      // Close the loading toast
+      // Extract useful info from listing
+      if (hasListing) {
+        // Check expiration
+        const now = Math.floor(Date.now() / 1000);
+        if (Number(tokenListing[6]) < now) {
+          toast.close(loadingToastId);
+          toast({
+            title: 'Listing Expired',
+            description: 'This listing has expired and is no longer available',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          });
+          setIsBuying(false);
+          return;
+        }
+      }
+    } catch (listingError) {
+      console.error('Error checking listing:', listingError);
       toast.close(loadingToastId);
-      
       toast({
-        title: 'Success',
-        description: 'Successfully purchased Digimon!',
-        status: 'success',
+        title: 'Listing Check Failed',
+        description: 'Failed to verify the listing status',
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
-      
-      // Trigger refresh after purchase is complete
-      if (onPurchaseComplete) {
-        onPurchaseComplete();
-      }
-    } catch (txError) {
-      let errorMessage = "Unknown error occurred";
-      
-      if (txError && typeof txError === 'object') {
-        errorMessage = 'message' in txError && typeof txError.message === 'string' 
-          ? txError.message 
-          : "Unknown error occurred";
-      }
-      
-      // Make sure to close any existing loading toast in case of error
-      toast.closeAll();
-      
-      toast({
-        title: 'Purchase Failed',
-        description: errorMessage,
-        status: 'error',
-        duration: 7000,
-        isClosable: true,
-      });
-    } finally {
       setIsBuying(false);
+      return;
     }
-  };
+    
+    // Execute the purchase
+    const tx = await marketplaceContract.buyDigimon(tokenId, { value: priceInWei });
+    
+    // Update toast to show waiting for confirmation
+    toast.close(loadingToastId);
+    const confirmToastId = toast({
+      title: 'Transaction Submitted',
+      description: 'Waiting for blockchain confirmation...',
+      status: 'info',
+      duration: null,
+      isClosable: true,
+    });
+    
+    // Wait for the transaction to be mined
+    await tx.wait();
+    
+    // Close confirmation toast
+    toast.close(confirmToastId);
+    
+    // Show success toast
+    toast({
+      title: 'Purchase Successful',
+      description: 'You are now the proud owner of this Digimon!',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
+    
+    // Call the callback if provided
+    if (onPurchaseComplete) {
+      onPurchaseComplete();
+    }
+  } catch (error) {
+    console.error('Error buying digimon:', error);
+    
+    // Handle specific error types
+    let errorMessage = 'Failed to complete the purchase';
+    
+    if (error instanceof Error) {
+      if (error.message.includes('user rejected')) {
+        errorMessage = 'Transaction cancelled by user';
+      } else if (error.message.includes('insufficient funds')) {
+        errorMessage = 'Insufficient funds in your wallet to complete this purchase';
+      }
+    }
+    
+    toast.closeAll();
+    toast({
+      title: 'Purchase Failed',
+      description: errorMessage,
+      status: 'error',
+      duration: 7000,
+      isClosable: true,
+    });
+  } finally {
+    setIsBuying(false);
+  }
+}, [marketplaceContract, account, tokenId, listingPrice, toast, onPurchaseComplete]);
 
   // Navigate to the listing page
   const handleNavigateToListing = () => {
@@ -231,6 +239,10 @@ function DigimonDisplay(props: DigimonDisplayProps) {
     
     router.push(`/list-digimon/${tokenId}`);
   };
+
+  // Static digimon data
+  const formattedPrice = getFormattedPrice();
+  const formattedDescription = getDescription();
 
   // Render the Digimon display with the appropriate action sections based on ownership and listing status
   return (
@@ -549,7 +561,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
             pb={2}
           >
             <Text fontSize="md" color="gray.600" lineHeight="taller">
-              {getDescription()}
+              {formattedDescription}
             </Text>
           </Box>
         </Box>
@@ -578,7 +590,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
                     </Box>
                     <Text fontWeight="bold">Listed Price:</Text>
                     <Text fontSize="lg" fontWeight="extrabold" color="blue.600">
-                      {getFormattedPrice()} ETH
+                      {formattedPrice} ETH
                     </Text>
                   </HStack>
 
@@ -629,7 +641,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
                   colorScheme="green" 
                   size="lg"
                   width="full"
-                  leftIcon={isBuying ? <Spinner size="sm" /> : <IoWalletOutline />}
+                  leftIcon={isBuying ? < FaSpinner /> : <IoWalletOutline />}
                   borderRadius="md"
                   boxShadow="md"
                   _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
@@ -638,7 +650,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
                   loadingText="Buying..."
                   isDisabled={isBuying}
                 >
-                  Buy for {getFormattedPrice()} ETH
+                  Buy for {formattedPrice} ETH
                 </Button>
               )}
             </>
