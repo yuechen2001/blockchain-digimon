@@ -4,10 +4,9 @@ import { Text } from '@chakra-ui/react';
 
 interface TimeRemainingProps {
   expiresAt: number | string;
-  color?: string;
 }
 
-export default function TimeRemaining({ expiresAt, color }: TimeRemainingProps) {
+export default function TimeRemaining({ expiresAt }: TimeRemainingProps) {
   const [remaining, setRemaining] = useState('0');
   const [hoursRemaining, setHoursRemaining] = useState(0);
   
@@ -35,7 +34,7 @@ export default function TimeRemaining({ expiresAt, color }: TimeRemainingProps) 
   const isLowTime = parseInt(remaining) < 2;
   
   return (
-    <Text color={color || (isLowTime ? "red.500" : "blue.600")} fontWeight="semibold">
+    <Text color={isLowTime ? "red.500" : "blue.600"} fontWeight="semibold">
       {remaining} Days {hoursRemaining > 0 ? `${hoursRemaining} Hours` : ''}
     </Text>
   );

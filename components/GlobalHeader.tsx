@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -7,17 +5,12 @@ import {
   HStack,
   Text,
   useToast,
-  Tooltip,
   Icon,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
-  MenuDivider,
   Spinner,
-  Container,
-  Flex,
-  Link,
 } from '@chakra-ui/react';
 import { useWeb3Context } from '../context/Web3Context';
 import { useAuth } from '../context/AuthContext';
@@ -30,13 +23,13 @@ export const GlobalHeader: React.FC = () => {
     account,
     isConnecting,
     isReconnecting,
-    connect,
+    connect: connectWallet,
     disconnect: disconnectWallet,
     connectionError,
     isConnected,
   } = useWeb3Context();
   
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const toast = useToast();
@@ -67,7 +60,7 @@ export const GlobalHeader: React.FC = () => {
 
   const handleConnect = async () => {
     try {
-      await connect();
+      await connectWallet();
     } catch (error) {
       toast({
         title: 'Error connecting wallet',
@@ -79,7 +72,6 @@ export const GlobalHeader: React.FC = () => {
     }
   };
 
-  // Server-side and initial client-side content
   const content = (
     <>
       <Box
