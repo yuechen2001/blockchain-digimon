@@ -625,12 +625,13 @@ const handleBuy = useCallback(async () => {
                   colorScheme="blue"
                   leftIcon={<IoPricetagOutline />}
                   size="lg"
+                  width="full"
                   borderRadius="md"
                   boxShadow="md"
                   _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
                   transition="all 0.2s"
                 >
-                  List for Sale
+                  List This Digimon For Sale
                 </Button>
               )}
 
@@ -644,7 +645,15 @@ const handleBuy = useCallback(async () => {
                   leftIcon={isBuying ? < FaSpinner /> : <IoWalletOutline />}
                   borderRadius="md"
                   boxShadow="md"
-                  _hover={{ transform: "translateY(-2px)", boxShadow: "lg" }}
+                  _hover={{ 
+                    transform: "translateY(-2px)", 
+                    boxShadow: "lg",
+                    bg: "green.500"
+                  }}
+                  _active={{
+                    transform: "translateY(0)",
+                    boxShadow: "sm"
+                  }}
                   transition="all 0.2s"
                   isLoading={isBuying}
                   loadingText="Buying..."
