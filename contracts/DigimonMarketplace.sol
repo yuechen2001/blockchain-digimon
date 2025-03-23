@@ -3,6 +3,7 @@ pragma solidity ^0.8.22;
 
 import {console} from "hardhat/console.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -50,6 +51,18 @@ contract DigimonToken is ERC721, ERC721Enumerable, ERC721URIStorage, AccessContr
     
     function unpause() external onlyRole(ADMIN_ROLE) {
         _unpause();
+    }
+    
+    function approve(address to, uint256 tokenId) public override(ERC721, IERC721) {
+        address owner = ownerOf(tokenId);
+        require(to != owner, "ERC721: approval to current owner");
+
+        require(
+            _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+            "ERC721: approve caller is not token owner or approved for all"
+        );
+
+        super.approve(to, tokenId);
     }
     
     // ======== Required Overrides ========

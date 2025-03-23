@@ -13,64 +13,69 @@ const __dirname = dirname(__filename);
 // Sleep function for rate limiting
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function getMintedTokenId(transaction, contract) {
+// Helper functions
+function loadJsonFile(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+async function loadContract(abiPath, address, signer) {
+  const contractABI = loadJsonFile(path.join(__dirname, abiPath));
+  return await ethers.getContractAt(contractABI, address, signer);
+}
+
+async function createListing(marketplace, tokenContract, tokenId) {
   try {
-    const receipt = await transaction.wait();
-    // In ethers v6, logs need to be parsed manually
-    for (const log of receipt.logs) {
-      try {
-        // Try to find the DigimonMinted event
-        const parsedLog = contract.interface.parseLog(log);
-        if (parsedLog && parsedLog.name === 'DigimonMinted') {
-          return parsedLog.args[0].toString();
-        }
-      } catch (e) {
-        // Skip logs that can't be parsed as our event
-        continue;
-      }
+    const listingPrice = ethers.parseEther('0.1');
+    const durationInDays = 7;
+    const durationInSeconds = durationInDays * 24 * 60 * 60;
+    
+    // Approve marketplace first
+    console.log(`[APPROVAL] Approving marketplace for token ${tokenId}...`);
+    const approveTx = await tokenContract.approve(marketplace.target, tokenId);
+    await approveTx.wait();
+    console.log(`[APPROVAL] Successfully approved marketplace for token ${tokenId}`);
+    
+    // Wait a moment after approval
+    await sleep(1000);
+    
+    // Proceed with listing
+    console.log(`[LIST] Listing token ${tokenId} for ${ethers.formatEther(listingPrice)} ETH...`);
+    const listTx = await marketplace.listDigimon(tokenId, listingPrice, durationInSeconds, { 
+      value: ethers.parseEther('0.05')
+    });
+    
+    const listingId = await getListingId(listTx, marketplace);
+    if (listingId) {
+      console.log(`[LIST] Success! New listing ID: ${listingId}`);
     }
-    console.log('[MINT] No DigimonMinted event found in transaction');
-    return null;
+    return true;
   } catch (error) {
-    console.log(`[MINT] Error parsing transaction: ${error.message}`);
-    return null;
+    console.log(`[LIST] Failed: ${error.message.split('\n')[0]}`);
+    return false;
   }
 }
 
 async function getListingId(transaction, contract) {
   try {
     const receipt = await transaction.wait();
-    // In ethers v6, logs need to be parsed manually
     for (const log of receipt.logs) {
       try {
-        // Try to find the DigimonListed event
-        const parsedLog = contract.interface.parseLog(log);
+        const parsedLog = contract.interface.parseLog({
+          topics: log.topics,
+          data: log.data,
+        });
+        
         if (parsedLog && parsedLog.name === 'DigimonListed') {
           return parsedLog.args[0].toString();
         }
-      } catch (e) {
-        // Skip logs that can't be parsed as our event
+      } catch {
+        // Skip logs that can't be parsed
         continue;
       }
     }
-    console.log('[LIST] No DigimonListed event found in transaction');
     return null;
-  } catch (error) {
-    console.log(`[LIST] Error parsing transaction: ${error.message}`);
+  } catch {
     return null;
-  }
-}
-
-async function getContractAddress() {
-  try {
-    // Read from src/config/addresses.json
-    const addressesPath = path.join(__dirname, '../src/config/addresses.json');
-    const addresses = JSON.parse(fs.readFileSync(addressesPath, 'utf8'));
-    console.log(`[INIT] Found contract address in src/config/addresses.json: ${addresses.DigimonMarketplace}`);
-    return addresses.DigimonMarketplace;
-  } catch (error) {
-    console.error('[ERROR] Failed to read contract address:', error.message);
-    throw new Error('Contract address not found. Make sure to deploy the contract first by running "npx hardhat run scripts/deployContract.js --network localhost"');
   }
 }
 
@@ -78,89 +83,93 @@ async function checkTokenExists(contract, tokenId) {
   try {
     await contract.getDigimon(tokenId);
     return true;
-  } catch (err) {
+  } catch {
     return false;
   }
 }
 
-async function mintToken(contract, tokenId, tokenURI, name, mintedItems) {
+async function mintToken(marketplace, tokenId, tokenURI, name, mintedItems) {
   try {
-    console.log(`[MINT] Minting ${name} (ID: ${tokenId})...`);
-    const mintTx = await contract.mintDigimon(tokenURI, {
-      value: ethers.parseEther('0.05')
-    });
+    console.log(`[MINT] Minting token with URI: ${tokenURI}`);
     
-    const newTokenId = await getMintedTokenId(mintTx, contract);
-    if (newTokenId) {
-      console.log(`[MINT] Success! New token ID: ${newTokenId}`);
-      mintedItems.set(tokenId, {
-        name,
-        tokenId: newTokenId,
-        uri: tokenURI
-      });
-    } else {
-      console.log(`[MINT] Success! Using original token ID: ${tokenId}`);
-      mintedItems.set(tokenId, {
-        name,
-        tokenId: tokenId.toString(),
-        uri: tokenURI
-      });
+    // The contract's mintDigimon function only takes the tokenURI parameter and requires payment
+    const tx = await marketplace.mintDigimon(tokenURI, {
+      value: ethers.parseEther('0.05') // Add the minting fee
+    });
+    const receipt = await tx.wait();
+    
+    // Try to get the actual token ID from the event
+    let mintedTokenId = null;
+    for (const log of receipt.logs) {
+      try {
+        const parsedLog = marketplace.interface.parseLog({
+          topics: log.topics,
+          data: log.data,
+        });
+        
+        if (parsedLog && parsedLog.name === 'DigimonMinted') {
+          mintedTokenId = parsedLog.args[0];
+          break;
+        }
+      } catch {
+        // Skip logs that aren't our event
+        continue;
+      }
     }
-    return true;
+    
+    if (receipt.status === 1) {
+      if (mintedTokenId) {
+        console.log(`[MINT] Successfully minted token with ID: ${mintedTokenId}`);
+        mintedItems.set(mintedTokenId.toString(), name);
+      } else {
+        console.log(`[MINT] Successfully minted token but couldn't retrieve ID`);
+        mintedItems.set(tokenId.toString(), name); // Use the expected tokenId as fallback
+      }
+      return true;
+    } else {
+      console.log(`[MINT] Failed to mint token`);
+      return false;
+    }
   } catch (error) {
-    console.log(`[MINT] Failed: ${error.message.substring(0, 100)}...`);
+    console.log(`[MINT] Error: ${error.message.split('\n')[0]}`);
     return false;
   }
 }
 
-async function checkExistingListing(contract, tokenId) {
+async function checkExistingListing(marketplace, tokenId) {
   try {
-    const [listingInfo, hasListing] = await contract.getTokenListing(tokenId);
+    const [_, hasListing] = await marketplace.getTokenListing(tokenId);
     if (hasListing) {
       console.log(`[LIST] Token ${tokenId} already has a listing`);
     }
     return hasListing;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
 
-async function listToken(contract, tokenId, listingPrice, durationInSeconds) {
+async function listStoredDigimons() {
   try {
-    console.log(`[LIST] Listing token ${tokenId} for ${ethers.formatEther(listingPrice)} ETH...`);
-    const listTx = await contract.listDigimon(tokenId, listingPrice, durationInSeconds, { 
-      value: ethers.parseEther('0.05')
-    });
+    console.log('[INIT] Starting Digimon listing process...');
     
-    const listingId = await getListingId(listTx, contract);
-    if (listingId) {
-      console.log(`[LIST] Success! New listing ID: ${listingId}`);
-    } else {
-      console.log(`[LIST] Success! No listing ID found`);
-    }
-    return true;
-  } catch (error) {
-    console.log(`[LIST] Failed: ${error.message.substring(0, 100)}...`);
-    return false;
-  }
-}
-
-async function listStoredDigimons(contractAddress) {
-  try {
-    console.log('[INIT] Loading contract and configuration...');
-    const abiPath = path.join(__dirname, '../src/abis/DigimonMarketplace.json');
-    const contractABI = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
-    contractAddress = contractAddress || await getContractAddress();
-    const ipfsHashesPath = path.join(__dirname, '../data/stored_hashes/ipfsHashes.json');
-    const ipfsHashes = JSON.parse(fs.readFileSync(ipfsHashesPath, 'utf8'));
+    // Load configuration files
+    const ipfsHashes = loadJsonFile(path.join(__dirname, '../data/stored_hashes/ipfsHashes.json'));
+    const addresses = loadJsonFile(path.join(__dirname, '../src/config/addresses.json'));
+    const tokenContractAddress = addresses.DigimonToken;
+    const marketplaceContractAddress = addresses.DigimonMarketplace;
     
+    // Initialize contracts
     const [signer] = await ethers.getSigners();
-    const contract = await ethers.getContractAt(contractABI, contractAddress, signer);
+    const marketplace = await loadContract('../src/abis/DigimonMarketplace.json', marketplaceContractAddress, signer);
+    const tokenContract = await loadContract('../src/abis/Token.json', tokenContractAddress, signer);
     
-    console.log(`[INIT] Using contract: ${contractAddress}`);
-    console.log(`[INIT] Signer address: ${signer.address}`);
+    // Log initialization info
+    console.log(`[INIT] Marketplace contract: ${marketplaceContractAddress}`);
+    console.log(`[INIT] Token contract: ${tokenContractAddress}`);
+    console.log(`[INIT] Signer: ${signer.address}`);
     console.log(`[INIT] Processing ${Object.keys(ipfsHashes).length} Digimons`);
     
+    // Process each Digimon
     let currentTokenId = 0;
     const mintedItems = new Map();
     
@@ -168,36 +177,24 @@ async function listStoredDigimons(contractAddress) {
       console.log(`\n[PROCESS] ${name} (ID: ${currentTokenId})`);
       const tokenURI = `ipfs://${hash}`;
       
-      // Check if token exists
-      const tokenExists = await checkTokenExists(contract, currentTokenId);
-      if (tokenExists) {
-        console.log(`[CHECK] Token ${currentTokenId} already exists`);
-      } else {
-        console.log(`[CHECK] Token ${currentTokenId} needs to be minted`);
-      }
-      
-      // Mint token if needed
+      // Step 1: Check if token exists and mint if needed
+      const tokenExists = await checkTokenExists(marketplace, currentTokenId);
       if (!tokenExists) {
-        const mintSuccess = await mintToken(contract, currentTokenId, tokenURI, name, mintedItems);
+        console.log(`[MINT] Token ${currentTokenId} needs to be minted`);
+        const mintSuccess = await mintToken(marketplace, currentTokenId, tokenURI, name, mintedItems);
         if (!mintSuccess) {
           currentTokenId++;
           continue;
         }
+        await sleep(1000); // Wait after minting
+      } else {
+        console.log(`[CHECK] Token ${currentTokenId} already exists`);
       }
       
-      // Wait before listing
-      await sleep(1000);
-      
-      // Check if listing exists
-      const listingPrice = ethers.parseEther('0.1');
-      const durationInDays = 7;
-      const durationInSeconds = durationInDays * 24 * 60 * 60;
-      
-      const hasListing = await checkExistingListing(contract, currentTokenId);
-      
-      // Create listing if needed
+      // Step 2: Check if listing exists and create if needed
+      const hasListing = await checkExistingListing(marketplace, currentTokenId);
       if (!hasListing) {
-        await listToken(contract, currentTokenId, listingPrice, durationInSeconds);
+        await createListing(marketplace, tokenContract, currentTokenId);
       }
       
       currentTokenId++;
@@ -206,10 +203,9 @@ async function listStoredDigimons(contractAddress) {
     console.log('\n[DONE] Finished processing all Digimons');
     console.log(`[DONE] Minted ${mintedItems.size} new Digimons`);
   } catch (error) {
-    console.error('[ERROR]', error.message);
+    console.error('[ERROR]', error.message.split('\n')[0]);
   }
 }
-
 async function main() {
   if (process.env.IS_RUNNING) return;
   await listStoredDigimons();
