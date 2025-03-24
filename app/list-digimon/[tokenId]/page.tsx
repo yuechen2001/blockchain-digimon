@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { 
@@ -42,12 +42,11 @@ import {
   AlertDialogOverlay,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ethers } from 'ethers';
-import { useWeb3Context } from '../../../context/Web3Context';
-import { GlobalHeader } from '../../../components/GlobalHeader';
 import { IoWalletOutline, IoTimeOutline, IoPricetagOutline, IoArrowBackOutline, IoCheckmarkCircleOutline, IoRefreshOutline } from 'react-icons/io5';
+import { GlobalHeader } from '../../../components/GlobalHeader';
 import ClientOnlyAlert from '../../../components/ClientOnlyAlert';
 import React from 'react';
+import { useListDigimon } from '../../../hooks/useListDigimon';
 
 // Define steps for the listing process
 const steps = [
@@ -61,143 +60,43 @@ export default function ListDigimon() {
   const params = useParams();
   const tokenId = typeof params.tokenId === 'string' ? params.tokenId : '';
   const toast = useToast();
-  const { activeStep, setActiveStep, goToNext } = useSteps({ index: 0, count: steps.length });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef(null);
-  
-  const [digimon, setDigimon] = useState<any>(null);
-  const [price, setPrice] = useState('');
-  const [duration, setDuration] = useState('7');
-  const [isListing, setIsListing] = useState(false);
-  const [isApproved, setIsApproved] = useState(false);
-  const [isCheckingApproval, setIsCheckingApproval] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [listingComplete, setListingComplete] = useState(false);
-  const [hasListingError, setHasListingError] = useState(false);
-  const [lastError, setLastError] = useState<string | null>(null);
   
-  const { marketplaceContract, tokenContract, account, isConnected } = useWeb3Context();
-
   // Theme colors
   const cardBg = useColorModeValue('white', 'gray.800');
   const accentBg = useColorModeValue('blue.50', 'blue.900');
   const stepperBg = useColorModeValue('gray.50', 'gray.700');
 
-  // Fetch Digimon metadata
-  const fetchDigimon = useCallback(async () => {
-    if (!tokenContract || !tokenId || !account) return;
+  // Use our custom hook
+  const {
+    digimon,
+    price,
+    setPrice,
+    duration,
+    setDuration,
+    isListing,
+    isCheckingApproval,
+    hasListingError,
+    lastError,
+    step: activeStep,
+    isConnected,
     
-    try {
-      setIsCheckingApproval(true);
-      
-      // Check if the user is the owner of this token
-      const owner = await tokenContract.ownerOf(tokenId);
-      if (owner.toLowerCase() !== account?.toLowerCase()) {
-        toast({
-          title: 'Not Authorized',
-          description: 'You are not the owner of this Digimon',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-        router.push('/my-listings');
-        return;
-      }
-
-      // Get token URI and metadata
-      const tokenURI = await tokenContract.tokenURI(tokenId).then((uri: string) => uri.replace('ipfs://', ''));
-      const response = await fetch(`https://ipfs.io/ipfs/${tokenURI}`);
-      const data = await response.json();
-      setDigimon(data);
-
-      // Check if token is already approved
-      await checkApprovalForListing();
-    } catch (error) {
-      console.error('Error fetching digimon:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load Digimon data',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsCheckingApproval(false);
-    }
-  }, [tokenContract, tokenId, account, router, toast]);
+    approveForListing,
+    listDigimon,
+    resetListingForm,
+    resetProcess
+  } = useListDigimon(tokenId);
 
   // Client-side only code
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Initial data fetch
-  useEffect(() => {
-    if (tokenContract && account && mounted) {
-      fetchDigimon();
-    }
-  }, [tokenContract, account, mounted, fetchDigimon]);
-
-  // Update stepper when listing is complete
-  useEffect(() => {
-    if (listingComplete && activeStep !== 2) {
-      setActiveStep(2);
-    }
-  }, [listingComplete, activeStep, setActiveStep]);
-
-  // Reset error state when user changes price or duration
-  useEffect(() => {
-    if (hasListingError) {
-      setHasListingError(false);
-      setLastError(null);
-    }
-  }, [price, duration]);
-
-  // Check if token is approved for marketplace
-  const checkApprovalForListing = async () => {
-    if (!tokenContract || !marketplaceContract || !account || !tokenId) {
-      return false;
-    }
-    
-    try {
-      // Check individual token approval
-      const approvedAddress = await tokenContract.getApproved(tokenId);
-      const isApprovedForToken = approvedAddress.toLowerCase() === marketplaceContract.target.toString().toLowerCase();
-      
-      // Check approval for all tokens
-      const isApprovedForAll = await tokenContract.isApprovedForAll(account, marketplaceContract.target);
-      
-      const isApproved = isApprovedForToken || isApprovedForAll;
-      setIsApproved(isApproved);
-      
-      // Update the step if already approved
-      if (isApproved) {
-        setActiveStep(1);
-      }
-      
-      return isApproved;
-    } catch (error) {
-      console.error('Error checking approval:', error);
-      return false;
-    }
-  };
-
-  // Handle approval for listing
+  // Handle approval for listing with toast notifications
   const handleApproveForListing = async () => {
-    if (!tokenContract || !marketplaceContract || !tokenId) {
-      toast({
-        title: 'Error',
-        description: 'Contracts not initialized',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return false;
-    }
-    
     try {
-      setIsListing(true);
-      
       // Create toast to inform user about approval
       toast({
         title: 'Step 1 of 2: Approval Required',
@@ -206,8 +105,6 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-      
-      const tx = await tokenContract.approve(marketplaceContract.target, tokenId);
       
       // Show loading toast
       const loadingToastId = toast({
@@ -218,7 +115,7 @@ export default function ListDigimon() {
         isClosable: true,
       });
       
-      await tx.wait();
+      await approveForListing();
       
       // Close loading toast
       toast.close(loadingToastId);
@@ -230,11 +127,7 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-      
-      setIsApproved(true);
-      setActiveStep(1);
-      return true;
-    } catch (error) {
+    } catch (error: any) {
       let errorMessage = "Failed to approve the marketplace. Please try again.";
       
       if (error && typeof error === 'object' && 'message' in error) {
@@ -254,7 +147,7 @@ export default function ListDigimon() {
             isClosable: true,
           });
           router.push('/my-listings');
-          return false;
+          return;
         }
       }
       
@@ -265,77 +158,24 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-      
-      return false;
-    } finally {
-      setIsListing(false);
     }
   };
 
-  // Reset form state
-  const resetListingForm = () => {
-    setHasListingError(false);
-    setLastError(null);
-    setPrice('');
-    setDuration('7');
+  // Wrap resetListingForm with dialog close
+  const handleResetListingForm = () => {
+    resetListingForm();
     onClose();
   };
 
-  // Reset entire listing process
+  // Wrap resetProcess with dialog close
   const handleResetProcess = async () => {
-    setHasListingError(false);
-    setLastError(null);
-    setIsCheckingApproval(true);
-    
-    try {
-      // Re-check approval status
-      await checkApprovalForListing();
-      setPrice('');
-      setDuration('7');
-      onClose();
-    } catch (error) {
-      console.error('Error resetting process:', error);
-    } finally {
-      setIsCheckingApproval(false);
-    }
+    await resetProcess();
+    onClose();
   };
 
-  // Listing functionality for approved Digimons
+  // Listing functionality with toast notifications
   const handleList = async () => {
-    if (!marketplaceContract || !tokenContract || !account || !tokenId || !isApproved) {
-      toast({
-        title: 'Error',
-        description: isApproved ? 'Please connect your wallet first' : 'Marketplace approval required first',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (!price || parseFloat(price) <= 0 || !duration || parseInt(duration) <= 0) {
-      toast({
-        title: 'Invalid Input',
-        description: 'Please enter a valid price and duration',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    // Clear any previous errors
-    setHasListingError(false);
-    setLastError(null);
-
     try {
-      setIsListing(true);
-      
-      // Proceed with listing
-      const priceInWei = ethers.parseEther(price);
-      const durationInDays = parseInt(duration);
-      const durationInSeconds = durationInDays * 24 * 60 * 60;
-      
       // Create loading toast and store its ID
       const loadingToastId = toast({
         title: 'Step 2 of 2: Creating Listing',
@@ -344,25 +184,8 @@ export default function ListDigimon() {
         duration: null,
         isClosable: true,
       });
-
-      // Try to get the marketplace listing fee
-      let listingFee = ethers.parseEther('0.01'); // Default fee
-      try {
-        listingFee = await marketplaceContract.getListingFee();
-      } catch (feeError) {
-        // If we can't get the fee, use default
-        console.error('Error getting listing fee:', feeError);
-      }
       
-      // Create the listing with the listing fee
-      const tx = await marketplaceContract.listDigimon(
-        tokenId,
-        priceInWei,
-        durationInSeconds,
-        { value: listingFee }
-      );
-      
-      await tx.wait();
+      await listDigimon();
       
       // Close loading toast
       toast.close(loadingToastId);
@@ -374,11 +197,7 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-      
-      // Set listing as complete and update step
-      setListingComplete(true);
-      setActiveStep(2);
-    } catch (error) {
+    } catch (error: any) {
       let errorMessage = "Failed to list your Digimon. Please try again.";
       
       if (error && typeof error === 'object' && 'message' in error) {
@@ -386,7 +205,7 @@ export default function ListDigimon() {
         errorMessage = typeof message === 'string' ? message : errorMessage;
         
         // If user rejected transaction, redirect to My Digimons page
-        if (errorMessage.includes("user rejected")) {
+        if (errorMessage.includes("user rejected") || errorMessage.includes("Transaction cancelled by user")) {
           // Close all existing toasts before showing cancellation toast
           toast.closeAll();
           
@@ -401,13 +220,8 @@ export default function ListDigimon() {
           return;
         }
         
-        // Handle other specific errors
-        if (errorMessage.includes("insufficient funds")) {
-          errorMessage = "You don't have enough ETH to pay the listing fee";
-        } else if (errorMessage.includes("execution reverted")) {
-          errorMessage = "Transaction failed. This could be due to an interrupted previous transaction.";
-          setHasListingError(true);
-          setLastError(errorMessage);
+        // For execution reverted errors, show the reset dialog
+        if (errorMessage.includes("execution reverted") || errorMessage.includes("interrupted previous transaction")) {
           onOpen(); // Open dialog for reset
         }
       }
@@ -419,8 +233,6 @@ export default function ListDigimon() {
         duration: 7000,
         isClosable: true,
       });
-    } finally {
-      setIsListing(false);
     }
   };
 
@@ -581,7 +393,7 @@ export default function ListDigimon() {
                       ))}
                     </HStack>
                     
-                    {digimon.types?.length > 0 && (
+                    {digimon?.types && digimon.types.length > 0 && (
                       <HStack wrap="wrap" justify={{ base: "center", sm: "flex-start" }}>
                         {digimon.types.slice(0, 3).map((type: any, index: number) => (
                           <Badge 
@@ -655,7 +467,7 @@ export default function ListDigimon() {
                             leftIcon={<IoRefreshOutline />}
                             colorScheme="red"
                             variant="outline"
-                            onClick={resetListingForm}
+                            onClick={handleResetListingForm}
                           >
                             Reset Form
                           </Button>

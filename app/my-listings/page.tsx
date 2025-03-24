@@ -17,208 +17,38 @@ import {
   InputLeftElement,
 } from '@chakra-ui/react';
 import { IoRefreshOutline, IoSearchOutline } from 'react-icons/io5';
-import { useWeb3Context } from '../../context/Web3Context';
+import { useMyListings } from '../../hooks/useMyListings';
 import { GlobalHeader } from '../../components/GlobalHeader';
 import DigimonDisplay from '../../components/DigimonDisplay';
-import { ethers } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
-import Digimon from '../../shared/models/Digimon';
+import { useEffect, useState } from 'react';
 import ClientOnlyAlert from '../../components/ClientOnlyAlert';
 
-interface OwnedDigimon {
-  digimon: Digimon;
-  tokenId: string;
-  listingId?: string;
-  price?: string;
-  seller?: string;
-  expiresAt?: number;
-  isOwnedByUser: boolean;
-}
-
 export default function MyListings() {
-  const [ownedDigimons, setOwnedDigimons] = useState<OwnedDigimon[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { account, isConnected, marketplaceContract, tokenContract } = useWeb3Context();
   const toast = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const fetchDigimonFromIPFS = async (ipfsHash: string) => {
-    try {
-      const response = await fetch(`https://ipfs.io/ipfs/${ipfsHash}`);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching digimon from IPFS:', error);
-      return null;
-    }
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const filteredDigimons = ownedDigimons.filter((ownedDigimon) => 
-    ownedDigimon.digimon?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    ownedDigimon.tokenId.toString().includes(searchTerm)
-  );
-
-  const fetchOwnedDigimons = useCallback(async () => {
-    if (!marketplaceContract || !tokenContract || !account) {
-      setError('Please connect your wallet');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log('Fetching owned Digimons for account:', account);
-
-      // Get all token IDs owned by the user
-      const filter = tokenContract.filters.Transfer(null, account, null);
-      console.log('Fetching transfer events...');
-      const events = await tokenContract.queryFilter(filter);
-      
-      // Filter events and safely extract tokenIds
-      const tokenIds = events.map((event: any) => {
-        // Check if the event has args property (is an EventLog)
-        if ('args' in event && event.args) {
-          return event.args[2].toString();
-        }
-        return null;
-      })
-      .filter(id => id !== null); // Remove null values
-      
-      console.log('Found token IDs:', tokenIds);
-
-      // Get all listings to check if any owned tokens are listed
-      const listings: any[] = [];
-      
-      try {
-        // Get active listing IDs
-        const listedDigimonsIds = await marketplaceContract.getActiveListingIds();
-        console.log('Active listing IDs:', listedDigimonsIds);
-        
-        // Check each listing to see if it belongs to the current user
-        for (const listingId of listedDigimonsIds) {
-          try {
-            const [listingResult, isValid] = await marketplaceContract.getListing(listingId);
-            
-            if (isValid && listingResult[2].toLowerCase() === account.toLowerCase()) {
-              // Example listingResult:
-              // {
-              //   0: 8n,                 // listingId
-              //   1: 8n,                 // tokenId
-              //   2: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',  // seller
-              //   3: 100000000000000000n, // price (0.1 ETH)
-              //   4: true,               // isActive
-              //   5: 1742517365n,        // createdAt
-              //   6: 1743122165n,        // expiresAt
-              // }
-              
-              // Skip expired listings
-              const currentTime = Math.floor(Date.now() / 1000);
-              const expiresAt = Number(listingResult[6]);
-              const isExpired = expiresAt <= currentTime;
-              
-              if (isExpired) {
-                console.log('Listing', listingId, 'is expired');
-                continue;
-              }
-              
-              listings.push({
-                listingId: listingResult[0].toString(),
-                tokenId: listingResult[1].toString(),
-                seller: listingResult[2].toString(),
-                price: ethers.formatEther(listingResult[3]),
-                isActive: listingResult[4],
-                createdAt: Number(listingResult[5]),
-                expiresAt: expiresAt
-              });
-              
-              console.log('Found active listing:', listings[listings.length - 1]);
-            }
-          } catch (err) {
-            console.error(`Error checking listing ${listingId}:`, err);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching active listings:', err);
-      }
-
-      const formattedTokens = await Promise.all(
-        tokenIds.map(async (tokenId) => {
-          try {
-            console.log('Processing token:', tokenId);
-            // Check if we still own this token
-            const currentOwner = await tokenContract.ownerOf(tokenId);
-            if (currentOwner.toLowerCase() !== account.toLowerCase()) {
-              console.log('Token', tokenId, 'no longer owned by account');
-              return null;
-            }
-
-            // Get the token URI and metadata
-            const tokenURI = await tokenContract.tokenURI(tokenId).then((uri) => uri.replace('ipfs://', ''));
-            console.log('Token URI:', tokenURI);
-            
-            // Fetch the token metadata
-            const digimonMetadata = await fetchDigimonFromIPFS(tokenURI);
-            if (!digimonMetadata) {
-              console.error(`Failed to fetch metadata for token ${tokenId}`);
-              return null;
-            }
-
-            // Check if token is listed
-            const listing = listings.find(l => l.tokenId === tokenId);
-            console.log('Listing status for token', tokenId, ':', listing || 'not listed');
-
-            return {
-              digimon: digimonMetadata,
-              tokenId,
-              listingId: listing?.listingId,
-              price: listing?.price,
-              seller: listing?.seller,
-              expiresAt: listing?.expiresAt,
-              isOwnedByUser: true
-            };
-          } catch (err) {
-            console.error(`Error fetching token ${tokenId}:`, err);
-            return null;
-          }
-        })
-      );
-
-      const filteredTokens = formattedTokens.filter(Boolean) as OwnedDigimon[];
-      console.log('Final owned Digimons:', filteredTokens);
-      setOwnedDigimons(filteredTokens);
-    } catch (err) {
-      console.error('Error in fetchOwnedDigimons:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch owned Digimons');
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch your Digimons',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [marketplaceContract, tokenContract, account, toast]);
-
-  useEffect(() => {
-    if (marketplaceContract && tokenContract && isConnected) {
-      fetchOwnedDigimons();
-    }
-  }, [marketplaceContract, tokenContract, isConnected, fetchOwnedDigimons]);
-
-  // Client-side only rendering for conditional UI elements
   const [isBrowser, setIsBrowser] = useState(false);
   
+  // Use all the functionality from the useMyListings hook
+  const { 
+    ownedDigimons,
+    isLoading,
+    isError,
+    error,
+    isConnected,
+    searchTerm,
+    setSearchTerm,
+    handleSearchChange,
+    fetchOwnedDigimons,
+    filterListings,
+    refetch
+  } = useMyListings();
+
+  // Client-side only rendering for conditional UI elements
   useEffect(() => {
     setIsBrowser(true);
   }, []);
+
+  // Filter digimons based on search term
+  const filteredDigimons = isBrowser ? filterListings(searchTerm) : [];
 
   // Return consistent UI structure for server rendering
   if (!isBrowser) {
@@ -298,11 +128,11 @@ export default function MyListings() {
               <Spinner size="xl" thickness="4px" speed="0.65s" color="blue.500" />
               <Text mt={4}>Loading your Digimons...</Text>
             </Box>
-          ) : error ? (
+          ) : isError ? (
             <ClientOnlyAlert
               status="error"
               title="Error!"
-              description={error}
+              description={error || "An unknown error occurred"}
             />
           ) : ownedDigimons.length === 0 ? (
             <Box textAlign="center" py={10}>
@@ -316,10 +146,11 @@ export default function MyListings() {
                   digimon={ownedDigimon.digimon}
                   tokenId={ownedDigimon.tokenId}
                   isListed={!!ownedDigimon.listingId}
-                  listingPrice={ownedDigimon.price}
+                  listingPrice={ownedDigimon.price || '0'}
                   isOwner={true}
-                  seller={ownedDigimon.seller}
-                  expiresAt={ownedDigimon.expiresAt}
+                  seller={ownedDigimon.seller || ''}
+                  expiresAt={ownedDigimon.expiresAt || 0}
+                  onPurchaseComplete={fetchOwnedDigimons}
                 />
               ))}
             </SimpleGrid>
