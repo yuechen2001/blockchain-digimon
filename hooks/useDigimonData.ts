@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Fetches Digimon data from IPFS, trying multiple gateways for reliability
+ * Fetches Digimon data from IPFS, using multiple public gateways for reliability
  * @param hash IPFS hash (without the ipfs:// prefix)
  * @returns The JSON data of the Digimon
  */
@@ -14,15 +14,7 @@ export const fetchDigimonFromIPFS = async (hash: string) => {
     'https://ipfs.fleek.co/ipfs/'
   ];
 
-  try {
-    const response = await fetch(`/api/ipfs/${hash}`);
-    if (response.ok) {
-      return response.json();
-    }
-  } catch (error) {
-    console.error('[IPFS] Error with local proxy:', error);
-  }
-
+  // Skip local API attempt and go directly to public gateways
   for (const gateway of IPFS_GATEWAYS) {
     try {
       const response = await fetch(`${gateway}${hash}`);
