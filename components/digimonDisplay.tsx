@@ -275,6 +275,7 @@ function DigimonDetails(props: {digimon: Digimon, accentBg: string, sectionBg: s
   <HStack 
     spacing={4} 
     p={3} 
+    mt={3} 
     borderRadius="lg" 
     bgColor={accentBg} 
     justifyContent="center"
