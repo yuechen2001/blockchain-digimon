@@ -169,8 +169,7 @@ export const useMyListings = () => {
     
     const lowerSearchTerm = term.toLowerCase();
     return ownedDigimons.filter((digimon) => 
-      digimon.digimon?.name?.toLowerCase().includes(lowerSearchTerm) || 
-      digimon.tokenId.toString().includes(lowerSearchTerm)
+      digimon.digimon?.name?.toLowerCase().includes(lowerSearchTerm) 
     );
   }, [ownedDigimons]);
 

@@ -238,19 +238,7 @@ export const useMarketplace = () => {
       if (!listing.digimonData) return false;
       
       return (
-        listing.digimonData.name?.toLowerCase().includes(lowerSearchTerm) ||
-        listing.digimonData.descriptions?.some((desc: any) => 
-          desc.description?.toLowerCase().includes(lowerSearchTerm)
-        ) ||
-        listing.digimonData.levels?.some((level: any) => 
-          level.level?.toLowerCase().includes(lowerSearchTerm)
-        ) ||
-        listing.digimonData.attributes?.some((attr: any) => 
-          attr.attribute?.toLowerCase().includes(lowerSearchTerm)
-        ) ||
-        listing.digimonData.types?.some((type: any) => 
-          type.type?.toLowerCase().includes(lowerSearchTerm)
-        )
+        listing.digimonData.name?.toLowerCase().includes(lowerSearchTerm) 
       );
     });
   }, [listings]);
