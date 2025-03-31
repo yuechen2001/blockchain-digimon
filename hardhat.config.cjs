@@ -26,7 +26,7 @@ function validateConfig() {
       process.exit(1);
     }
 
-    if (!ETHERSCAN_API_KEY && process.env.VERIFY === 'true') {
+    if (!ETHERSCAN_API_KEY) {
       console.warn("⚠️ Warning: ETHERSCAN_API_KEY is not set. Contract verification will not work.");
     }
   }

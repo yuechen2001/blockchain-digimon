@@ -17,7 +17,6 @@ const config = {
   test: {
     networkName: 'sepolia',
     verifyContracts: true,
-    etherscanApiKey: process.env.ETHERSCAN_API_KEY,
     gasPrice: 'auto',
     gasMultiplier: 1.2,
   },
@@ -26,7 +25,6 @@ const config = {
   production: {
     networkName: 'mainnet',
     verifyContracts: true,
-    etherscanApiKey: process.env.ETHERSCAN_API_KEY,
     gasPrice: 'auto',
     gasMultiplier: 1.1,
     priorityFee: 2, // Base priority fee in gwei
