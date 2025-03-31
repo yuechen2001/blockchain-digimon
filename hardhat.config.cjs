@@ -3,7 +3,37 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
-const { MORALIS_NODE_URL, PRIVATE_KEY, COINMARKETCAP_API_KEY } = process.env;
+// Environment variable handling with validation and fallbacks
+const MORALIS_NODE_URL = process.env.MORALIS_NODE_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
+const REPORT_GAS = process.env.REPORT_GAS === 'true';
+const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || '';
+
+// Validation for production networks
+function validateConfig() {
+  const currentNetwork = process.env.HARDHAT_NETWORK;
+  
+  // Only validate when targeting external networks (not hardhat or localhost)
+  if (currentNetwork && !['hardhat', 'localhost'].includes(currentNetwork)) {
+    if (!MORALIS_NODE_URL) {
+      console.error("❌ MORALIS_NODE_URL is required for network:", currentNetwork);
+      process.exit(1);
+    }
+    
+    if (!PRIVATE_KEY) {
+      console.error("❌ PRIVATE_KEY is required for network:", currentNetwork);
+      process.exit(1);
+    }
+
+    if (!ETHERSCAN_API_KEY && process.env.VERIFY === 'true') {
+      console.warn("⚠️ Warning: ETHERSCAN_API_KEY is not set. Contract verification will not work.");
+    }
+  }
+}
+
+// Run validation
+validateConfig();
 
 module.exports = {
     solidity: {
@@ -33,26 +63,29 @@ module.exports = {
             chainId: 31337,
         },
         sepolia: {
-            url: MORALIS_NODE_URL,
-            accounts: [PRIVATE_KEY],
+            url: MORALIS_NODE_URL || "https://sepolia.infura.io/v3/your-key-here", // Fallback for dev setup
+            accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
             gasMultiplier: 1.2,  // Add buffer to estimated gas
             gasPrice: "auto",
         },
         mainnet: {
-            url: MORALIS_NODE_URL,
-            accounts: process.env.PRIVATE_KEY ? [PRIVATE_KEY] : [],
+            url: MORALIS_NODE_URL || "https://mainnet.infura.io/v3/your-key-here", // Fallback for dev setup
+            accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
             gasPrice: "auto",
             gasMultiplier: 1.1,
         }
     },
     gasReporter: {
-        enabled: process.env.REPORT_GAS ? true : false,
+        enabled: REPORT_GAS,
         currency: "USD",
         coinmarketcap: COINMARKETCAP_API_KEY,
         token: "ETH",
         gasPriceApi: "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
         excludeContracts: [],
         src: "./contracts",
+    },
+    etherscan: {
+        apiKey: ETHERSCAN_API_KEY,
     },
     logger: {
         showLogs: true
