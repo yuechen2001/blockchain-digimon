@@ -63,13 +63,13 @@ module.exports = {
             chainId: 31337,
         },
         sepolia: {
-            url: MORALIS_NODE_URL || "https://sepolia.infura.io/v3/your-key-here", // Fallback for dev setup
+            url: MORALIS_NODE_URL || "", // Fallback for dev setup
             accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
             gasMultiplier: 1.2,  // Add buffer to estimated gas
             gasPrice: "auto",
         },
         mainnet: {
-            url: MORALIS_NODE_URL || "https://mainnet.infura.io/v3/your-key-here", // Fallback for dev setup
+            url: MORALIS_NODE_URL || "", // Fallback for dev setup
             accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
             gasPrice: "auto",
             gasMultiplier: 1.1,
