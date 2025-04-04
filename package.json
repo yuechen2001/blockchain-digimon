@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "deploy": "npx hardhat run scripts/deploy.cjs --network mainnet",
     "start": "next start",
     "lint": "next lint"
   },
