@@ -1,52 +1,75 @@
-import { AuthOptions } from "next-auth";
-import NextAuth from "next-auth/next";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { promises as fs } from 'fs';
-import path from 'path';
-import bcrypt from 'bcryptjs';
+import NextAuth from 'next-auth';
+import type { AuthOptions, Session, User } from 'next-auth';
+import type { JWT } from 'next-auth/jwt';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcryptjs';
+import { prisma } from '../../../../lib/prisma';
+import { ConnectedWallet } from '../../../../types/next-auth';
+
+// Define the type for a wallet from our database
+interface WalletData {
+  id: string;
+  address: string;
+  isActive: boolean;
+  userId: string;
+}
+
+// Extend User type to include connectedWallets
+interface CustomUser extends User {
+  id: string;
+  email?: string;
+  name?: string;
+  connectedWallets?: ConnectedWallet[];
+}
 
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Missing credentials');
+        }
+
         try {
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error('Email and password are required');
+          // Find the user by email
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            },
+            include: {
+              wallets: true
+            }
+          });
+
+          if (!user || !user.password) {
+            throw new Error('User not found or password not set');
           }
 
-          // Read users from JSON file
-          const usersPath = path.join(process.cwd(), 'data', 'users', 'users.json');
-          let users = [];
+          // Compare the provided password with the stored hash
+          const isPasswordValid = await compare(credentials.password, user.password);
           
-          try {
-            const usersData = await fs.readFile(usersPath, 'utf-8');
-            users = JSON.parse(usersData);
-          } catch (error) {
-            // If file doesn't exist or is invalid, return null
-            return null;
-          }
-
-          const user = users.find((u: any) => u.email === credentials.email);
-          if (!user) {
-            throw new Error('User not found');
-          }
-
-          const isValid = await bcrypt.compare(credentials.password, user.password);
-          if (!isValid) {
+          if (!isPasswordValid) {
             throw new Error('Invalid password');
           }
+
+          // Format wallets for the JWT token
+          const connectedWallets = user.wallets.map((wallet: WalletData) => ({
+            id: wallet.id,
+            address: wallet.address,
+            isActive: wallet.isActive
+          }));
 
           return {
             id: user.id,
             email: user.email,
-            name: user.username,
-            walletAddress: user.walletAddress
-          };
+            name: user.name, // Use name field instead of username
+            connectedWallets
+          } as CustomUser;
         } catch (error) {
           console.error('Authorization error:', error);
           return null;
@@ -55,26 +78,42 @@ export const authOptions: AuthOptions = {
     })
   ],
   session: { 
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60 // 30 days
+    strategy: "jwt" as const,
+    maxAge: 7 * 24 * 60 * 60 // 7 days
+  },
+  // Add explicit CSRF protection
+  cookies: {
+    csrfToken: {
+      name: 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.email = user.email;
-        token.name = user.name;
-        token.walletAddress = user.walletAddress;
+        // Convert any null values to undefined for type safety
+        token.id = user.id;
+        token.email = user.email || undefined;
+        token.name = user.name || undefined;
+        token.connectedWallets = (user as CustomUser).connectedWallets;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session, token: JWT }) {
       if (token) {
+        // Send properties to the client, like id, email, name, and connectedWallets (especially important for wallet addresses)
         session.user = {
           ...session.user,
+          id: token.id as string,
           email: token.email,
           name: token.name,
-          walletAddress: token.walletAddress
+          connectedWallets: token.connectedWallets as ConnectedWallet[] | undefined
         };
       }
       return session;
