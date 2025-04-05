@@ -74,3 +74,9 @@ test-results/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# prisma
+/prisma/prisma.db
+
+
+
