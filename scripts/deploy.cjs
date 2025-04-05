@@ -2,11 +2,13 @@
  * Comprehensive deployment script for DigimonToken and DigimonMarketplace contracts
  * Handles deployment to different environments (development, test, production)
  * Combines environment-specific configuration with ABI saving functionality
+ * Also handles minting and listing Digimon NFTs after deployment
  */
 const { ethers, network, run } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 const deployConfig = require("../deploy-config.cjs");
+const { spawnSync, spawn } = require("child_process");
 
 // Get the environment from command line args or default to development
 const environment = process.env.DEPLOY_ENV || "development";
@@ -32,7 +34,7 @@ async function verify(contractAddress, args) {
   }
 }
 
-// Save deployment information to JSON files
+// Save deployment information to JSON files and output environment variable information
 function saveDeploymentInfo(contractAddresses) {
   // Save to deployments directory (for infrastructure tracking)
   const deploymentsDir = path.join(__dirname, "../deployments");
@@ -47,18 +49,59 @@ function saveDeploymentInfo(contractAddresses) {
   };
   
   const filePath = path.join(deploymentsDir, `${environment}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(deploymentInfo, null, 2));
-  console.log(`\nDeployment info saved to ${filePath}`);
   
-  // Save to src/config for frontend use
-  const srcConfigDir = path.join(__dirname, '../src/config');
-  if (!fs.existsSync(srcConfigDir)) {
-    fs.mkdirSync(srcConfigDir, { recursive: true });
+  // For development environment, append to history rather than overwriting
+  if (environment === 'development') {
+    let deploymentHistory = [];
+    
+    // Read existing file if it exists
+    if (fs.existsSync(filePath)) {
+      try {
+        deploymentHistory = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        
+        // If it's not already an array (from old format), convert it
+        if (!Array.isArray(deploymentHistory)) {
+          deploymentHistory = [deploymentHistory];
+        }
+      } catch (error) {
+        console.log(`Error reading existing deployment history: ${error.message}`);
+        deploymentHistory = [];
+      }
+    }
+    
+    // Add new deployment to history
+    deploymentHistory.push(deploymentInfo);
+    
+    // Write back the updated history
+    fs.writeFileSync(filePath, JSON.stringify(deploymentHistory, null, 2));
+    console.log(`\nDeployment info appended to history in ${filePath}`);
+  } else {
+    // For test and production, maintain single deployment record
+    fs.writeFileSync(filePath, JSON.stringify(deploymentInfo, null, 2));
+    console.log(`\nDeployment info saved to ${filePath}`);
   }
   
-  const addressesPath = path.join(srcConfigDir, 'addresses.json');
-  fs.writeFileSync(addressesPath, JSON.stringify(contractAddresses, null, 2));
-  console.log(`Contract addresses saved to ${addressesPath}`);
+  // Create a copy of .env.example with the current addresses if it doesn't exist
+  const envExamplePath = path.join(__dirname, '../.env.example');
+  const envContent = `# Contract addresses deployed on ${environment}
+    NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS=${contractAddresses.DigimonToken}
+    NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS=${contractAddresses.DigimonMarketplace}
+    NEXT_PUBLIC_NETWORK_NAME=${contractAddresses.networkName}
+
+    # Add other environment variables here
+  `;
+  
+  fs.writeFileSync(envExamplePath, envContent);
+  console.log(`Environment variables example saved to ${envExamplePath}`);
+  
+  // Output instructions for setting up environment variables
+  console.log('\n=================================================================');
+  console.log('IMPORTANT: For Vercel deployment, add these environment variables:');
+  console.log('=================================================================');
+  console.log(`NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS=${contractAddresses.DigimonToken}`);
+  console.log(`NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS=${contractAddresses.DigimonMarketplace}`);
+  console.log(`NEXT_PUBLIC_NETWORK_NAME=${contractAddresses.networkName}`);
+  console.log('=================================================================\n');
 }
 
 // Save ABIs to src/abis directory
@@ -142,7 +185,51 @@ async function main() {
   
   console.log("\n✨ Deployment complete! ✨");
   
+  // Run initial setup (mint and list Digimons) if we're in development or test environment
+  if (environment === 'development' || environment === 'test') {
+    await injectDigimonNFTs(contractAddresses);
+  }
+  
   return { digimonToken, digimonMarketplace };
+}
+
+/**
+ * Runs the listStoredDigimons.js script to mint and list Digimon NFTs
+ * This creates an initial marketplace with items for testing
+ */
+async function injectDigimonNFTs(contractAddresses) {
+  console.log("\n📋 Setting up initial marketplace items...");
+  try {
+    // Set environment variables for the child process
+    const env = {
+      ...process.env,
+      NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS: contractAddresses.DigimonToken,
+      NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS: contractAddresses.DigimonMarketplace,
+      NEXT_PUBLIC_NETWORK_NAME: contractAddresses.networkName,
+      IS_DEPLOYED_SETUP: "true"
+    };
+
+    // Run listStoredDigimons script
+    const scriptPath = path.join(__dirname, "listStoredDigimons.js");
+    console.log("\n🔄 Running listStoredDigimons script to mint and list Digimons...");
+    
+    // Use spawnSync for synchronous execution within deploy script
+    const result = spawnSync("node", ["--experimental-modules", scriptPath], {
+      env,
+      stdio: 'inherit',
+      shell: true
+    });
+
+    if (result.error) {
+      console.error("Error running listStoredDigimons script:", result.error);
+      return;
+    }
+    
+    console.log("\n✅ Initial marketplace setup complete!");
+  } catch (error) {
+    console.error("Failed to set up initial marketplace items:", error);
+    console.log("You can manually run the listStoredDigimons.js script later.");
+  }
 }
 
 main()
