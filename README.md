@@ -20,6 +20,46 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Blockchain Components
+
+This project includes Ethereum smart contracts for a Digimon NFT marketplace built with Hardhat.
+
+### Local Development Setup
+
+To set up the local blockchain environment and deploy the contracts:
+
+```bash
+# From the project root
+bash scripts/local_project_setup.sh
+```
+
+This script will:
+1. Start a local Hardhat node
+2. Deploy the DigimonToken and DigimonMarketplace contracts
+3. Initialize the contracts with test data
+
+### Deployment System
+
+The project includes an infrastructure-as-code deployment system that supports multiple environments:
+
+```bash
+# Local development
+npx hardhat run scripts/deploy.cjs --network localhost
+
+# Test network (Sepolia)
+DEPLOY_ENV=test npx hardhat run scripts/deploy.cjs --network sepolia
+
+# Production deployment (Mainnet)
+DEPLOY_ENV=production npx hardhat run scripts/deploy.cjs --network mainnet
+```
+
+Deployment information is saved to:
+- `deployments/{environment}.json` - Complete deployment records
+- `src/config/addresses.json` - Contract addresses for frontend use
+- `src/abis/` - Contract ABIs for frontend integration
+
+Configuration for different environments is managed in `deploy-config.cjs`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
