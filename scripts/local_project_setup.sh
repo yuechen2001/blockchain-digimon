@@ -15,9 +15,9 @@ end tell"
 echo "Waiting for Hardhat node to start..."
 sleep 5
 
-# Deploy contracts
-echo "Running deployContract.js..."
-npx hardhat run scripts/deployContract.js --network localhost
+# Deploy contracts using the new deploy.cjs script
+echo "Running deploy.cjs..."
+npx hardhat run scripts/deploy.cjs --network localhost
 if [ $? -ne 0 ]; then
     echo "Error: Contract deployment failed!"
     exit 1

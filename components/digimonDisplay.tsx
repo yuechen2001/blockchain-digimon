@@ -25,13 +25,13 @@ interface DigimonDisplayProps {
  * DigimonDisplay component that renders the appropriate UI based on the digimon ownership and listing status
  */
 function DigimonDisplay(props: DigimonDisplayProps) {
-  const { digimon, tokenId, isListed, listingPrice, isOwner, seller, expiresAt } = props;
+  const { digimon, tokenId, isListed, listingPrice, isOwner, seller, expiresAt, onPurchaseComplete } = props;
   const [mounted, setMounted] = useState(false);
   const toast = useToast();
   const router = useRouter();
 
-  // Use our custom hooks
-  const { purchaseDigimon, isBuying } = useDigimonPurchase();
+  // Use our custom hooks with the onPurchaseComplete callback
+  const { purchaseDigimon, isBuying } = useDigimonPurchase(onPurchaseComplete);
   
   // Theme colors
   const cardBg = useColorModeValue('white', 'gray.800');
@@ -70,7 +70,7 @@ function DigimonDisplay(props: DigimonDisplayProps) {
 
   // Handle buying a Digimon
   const handleBuy = useCallback(async () => {
-    purchaseDigimon(tokenId, listingPrice);
+    await purchaseDigimon(tokenId, listingPrice);
   }, [purchaseDigimon, tokenId, listingPrice]);
 
   // Navigate to the listing page

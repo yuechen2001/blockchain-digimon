@@ -21,6 +21,9 @@ export const useMyListings = () => {
   const [error, setError] = useState<string | null>(null);
   const [ownedDigimons, setOwnedDigimons] = useState<OwnedDigimon[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pendingAmount, setPendingAmount] = useState<string>('0');
+  const [isWithdrawLoading, setIsWithdrawLoading] = useState(false);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
 
   const fetchOwnedDigimons = useCallback(async () => {
     if (!marketplaceContract || !tokenContract || !account) {
@@ -161,6 +164,58 @@ export const useMyListings = () => {
     }
   }, [marketplaceContract, tokenContract, account]);
 
+  // Fetch the user's pending withdrawal amount
+  /**
+   * Fetches the user's pending withdrawal amount from the marketplace contract.
+   * Returns '0' if the wallet is not connected or if there is an error.
+   */
+  const fetchPendingWithdrawal = useCallback(async () => {
+    if (!marketplaceContract || !account) {
+      return '0';
+    }
+
+    try {
+      const amount = await marketplaceContract.getPendingWithdrawal(account);
+      const formattedAmount = ethers.formatEther(amount);
+      setPendingAmount(formattedAmount);
+      return formattedAmount;
+    } catch (err) {
+      console.error('Error fetching pending withdrawal:', err);
+      return '0';
+    }
+  }, [marketplaceContract, account]);
+
+  // Withdraw funds from the marketplace
+  const withdrawFunds = useCallback(async () => {
+    if (!marketplaceContract || !account) {
+      setWithdrawError('Wallet not connected');
+      return false;
+    }
+    
+    if (parseFloat(pendingAmount) <= 0) {
+      setWithdrawError('No funds to withdraw');
+      return false;
+    }
+    
+    setIsWithdrawLoading(true);
+    setWithdrawError(null);
+    
+    try {
+      const tx = await marketplaceContract.withdrawFunds();
+      await tx.wait();
+      
+      // Update pending amount after successful withdrawal
+      setPendingAmount('0');
+      return true;
+    } catch (err: any) {
+      console.error('Error withdrawing funds:', err);
+      setWithdrawError(err.message || 'Failed to withdraw funds');
+      return false;
+    } finally {
+      setIsWithdrawLoading(false);
+    }
+  }, [marketplaceContract, account, pendingAmount]);
+
   // Filter listings based on search term
   const filterListings = useCallback((term: string) => {
     if (!term.trim()) {
@@ -182,8 +237,9 @@ export const useMyListings = () => {
   useEffect(() => {
     if (isConnected && marketplaceContract && tokenContract && account) {
       fetchOwnedDigimons();
+      fetchPendingWithdrawal();
     }
-  }, [isConnected, marketplaceContract, tokenContract, account, fetchOwnedDigimons]);
+  }, [isConnected, marketplaceContract, tokenContract, account, fetchOwnedDigimons, fetchPendingWithdrawal]);
 
   // Use React Query for data refetching
   const { refetch } = useQuery({
@@ -204,6 +260,11 @@ export const useMyListings = () => {
     handleSearchChange,
     fetchOwnedDigimons,
     filterListings,
-    refetch
+    refetch,
+    pendingAmount,
+    isWithdrawLoading,
+    withdrawError,
+    withdrawFunds,
+    fetchPendingWithdrawal
   };
 };
