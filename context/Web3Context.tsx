@@ -8,6 +8,7 @@ import { useToast } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import DigimonMarketplaceABI from '../src/abis/DigimonMarketplace.json';
 import DigimonTokenABI from '../src/abis/Token.json';
+import contractAddresses from '../src/config/contracts';
 
 interface Web3ContextType {
   account: string | null;
@@ -57,10 +58,9 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const initializeContract = useCallback(async (provider: ethers.BrowserProvider) => {
     try {
-      // Load contract addresses from src/config/addresses.json
-      const addressesModule = await import('../src/config/addresses.json');
-      const marketplaceAddress = addressesModule.DigimonMarketplace;
-      const tokenAddress = addressesModule.DigimonToken;
+      // Get contract addresses from environment variables via config
+      const marketplaceAddress = contractAddresses.DigimonMarketplace;
+      const tokenAddress = contractAddresses.DigimonToken;
       
       console.log('Loaded contract addresses:', {
         marketplace: marketplaceAddress,
@@ -68,7 +68,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (!marketplaceAddress || !tokenAddress) {
-        throw new Error('Contract addresses not found');
+        throw new Error('Contract addresses not found. Make sure to set environment variables.');
       }
 
       const signer = await provider.getSigner();
