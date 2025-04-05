@@ -4,8 +4,8 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 // Environment variable handling with validation and fallbacks
-const MORALIS_NODE_URL = process.env.MORALIS_NODE_URL;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const MORALIS_NODE_URL = process.env.MORALIS_NODE_URL || '';
+const PRIVATE_KEY = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [];
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || '';
 const REPORT_GAS = process.env.REPORT_GAS === 'true';
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || '';
@@ -63,14 +63,14 @@ module.exports = {
             chainId: 31337,
         },
         sepolia: {
-            url: MORALIS_NODE_URL || "", // Fallback for dev setup
-            accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+            url: MORALIS_NODE_URL,
+            accounts: PRIVATE_KEY,
             gasMultiplier: 1.2,  // Add buffer to estimated gas
             gasPrice: "auto",
         },
         mainnet: {
-            url: MORALIS_NODE_URL || "", // Fallback for dev setup
-            accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+            url: MORALIS_NODE_URL,
+            accounts: PRIVATE_KEY,
             gasPrice: "auto",
             gasMultiplier: 1.1,
         }
