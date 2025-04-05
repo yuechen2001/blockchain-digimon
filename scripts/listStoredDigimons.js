@@ -154,9 +154,14 @@ async function listStoredDigimons() {
     
     // Load configuration files
     const ipfsHashes = loadJsonFile(path.join(__dirname, '../data/stored_hashes/ipfsHashes.json'));
-    const addresses = loadJsonFile(path.join(__dirname, '../src/config/addresses.json'));
-    const tokenContractAddress = addresses.DigimonToken;
-    const marketplaceContractAddress = addresses.DigimonMarketplace;
+    
+    // Get contract addresses from environment variables
+    const tokenContractAddress = process.env.NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS;
+    const marketplaceContractAddress = process.env.NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS;
+    
+    if (!tokenContractAddress || !marketplaceContractAddress) {
+      throw new Error('Contract addresses not found in environment variables. Make sure to set NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS and NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS.');
+    }
     
     // Initialize contracts
     const [signer] = await ethers.getSigners();
@@ -207,8 +212,21 @@ async function listStoredDigimons() {
   }
 }
 async function main() {
-  if (process.env.IS_RUNNING) return;
+  // This flag prevents the script from running twice
+  if (global.isRunning) return;
+  global.isRunning = true;
+  
+  // Only print this when running standalone, not when called from deploy script
+  if (!process.env.IS_DEPLOYED_SETUP) {
+    console.log('\n🦖 Starting Digimon minting and listing process...');
+  }
+  
   await listStoredDigimons();
+  
+  // Only print this when running standalone, not when called from deploy script
+  if (!process.env.IS_DEPLOYED_SETUP) {
+    console.log('\n🎉 Digimon minting and listing complete!');
+  }
 }
 
 main()
