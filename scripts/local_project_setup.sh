@@ -23,14 +23,5 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# List stored Digimons and ensure it completes
-echo "Running listStoredDigimons.js..."
-npx hardhat run scripts/listStoredDigimons.js --network localhost
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to list stored Digimons!"
-    exit 1
-fi
-echo "List Digimons script completed successfully."
-
 echo "Setup completed! The Hardhat node is running in the separate terminal window."
 echo "When finished, close the terminal window running the Hardhat node or press Ctrl+C in that window."
