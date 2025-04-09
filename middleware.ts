@@ -4,6 +4,7 @@ import { getToken } from 'next-auth/jwt';
 import { applyRateLimit } from './middleware/rateLimit/rateLimitMiddleware';
 
 const PUBLIC_PATHS = ['/login', '/register', '/', '/api/auth/[...nextauth]'];
+const authExcludedPaths = ['/api/auth/signin', '/api/auth/callback', '/api/auth/session', '/api/auth/csrf', '/api/auth/providers'];
 const API_PATHS = ['/api/'];
 
 /**
@@ -24,7 +25,8 @@ export async function middleware(request: NextRequest) {
   const session = await getToken({ req: request });
 
   // Check for CSRF protection on API routes (excluding NextAuth route)
-  if (pathname.startsWith('/api/') && !pathname.includes('/api/auth/[...nextauth]')) {
+  if (pathname.startsWith('/api/') && 
+    !pathname.startsWith('/api/auth/')) {
     // Skip CSRF check for GET requests
     if (request.method !== 'GET') {
       const csrfToken = request.headers.get('csrf-token');
