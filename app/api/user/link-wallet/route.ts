@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const users = usersData ? JSON.parse(usersData) : [];
     
     // Find user by email
-    const userIndex = users.findIndex((u: any) => u.email === session.user.email);
+    const userIndex = users.findIndex((u: { email: string }) => u.email === session.user.email);
 
     if (userIndex === -1) {
       // If user doesn't exist in JSON, create new entry

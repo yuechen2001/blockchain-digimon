@@ -183,7 +183,7 @@ const DigimonContent: React.FC<DigimonContentProps> = ({
   if (ownedDigimons.length === 0) {
     return (
       <Box textAlign="center" py={10}>
-        <Text>You don't own any Digimons yet.</Text>
+        <Text>You do not own any Digimons yet.</Text>
       </Box>
     );
   }
@@ -209,7 +209,6 @@ const DigimonContent: React.FC<DigimonContentProps> = ({
 
 // Main component
 export default function MyListings() {
-  const toast = useToast();
   const [isBrowser, setIsBrowser] = useState(false);
   
   const { 
@@ -219,11 +218,11 @@ export default function MyListings() {
     error,
     isConnected,
     searchTerm,
-    setSearchTerm,
+    // Removed unused setSearchTerm
     handleSearchChange,
     fetchOwnedDigimons,
     filterListings,
-    refetch,
+    // Removed unused refetch
     pendingAmount,
     isWithdrawLoading,
     withdrawError,

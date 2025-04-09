@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     const users = usersData ? JSON.parse(usersData) : [];
 
     // Check if user already exists
-    if (users.some((u: any) => u.email === email)) {
+    if (users.some((u: { email: string }) => u.email === email)) {
       return NextResponse.json(
         { error: 'User already exists' },
         { status: 400 }
@@ -55,7 +55,8 @@ export async function POST(req: Request) {
     await fs.writeFile(usersPath, JSON.stringify(users, null, 2));
 
     // Return success without password
-    const { password: _, ...userWithoutPassword } = newUser;
+    const userWithoutPassword = { ...newUser } as Partial<typeof newUser>;
+    delete userWithoutPassword.password;
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
     console.error('Registration error:', error);

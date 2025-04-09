@@ -127,7 +127,7 @@ export default function LoginPage() {
                   </Button>
 
                   <Text color="whiteAlpha.900">
-                    Don't have an account?{' '}
+                    Do not have an account?{' '}
                     <Link
                       color="blue.300"
                       onClick={() => router.push('/register')}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { Box } from '@chakra-ui/react';
 import Image from 'next/image';
 

@@ -81,7 +81,19 @@ export const authOptions: AuthOptions = {
     maxAge: 7 * 24 * 60 * 60 // 7 days
   },
   // Add explicit CSRF protection
+  secret: process.env.NEXTAUTH_SECRET,
+  // Force absolute URLs in Next.js 13+ to prevent URL construction errors
+  useSecureCookies: process.env.NODE_ENV === 'production',
   cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    },
     csrfToken: {
       name: 'next-auth.csrf-token',
       options: {
@@ -92,7 +104,6 @@ export const authOptions: AuthOptions = {
       }
     }
   },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

@@ -38,6 +38,11 @@ function DigimonDisplay(props: DigimonDisplayProps) {
   const sectionBg = useColorModeValue('gray.50', 'gray.700');
   const accentBg = useColorModeValue('blue.50', 'blue.900');
 
+  // Handle buying a Digimon
+  const handleBuy = useCallback(async () => {
+    await purchaseDigimon(tokenId, listingPrice);
+  }, [purchaseDigimon, tokenId, listingPrice]);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -67,11 +72,6 @@ function DigimonDisplay(props: DigimonDisplayProps) {
     const price = parseFloat(listingPrice);
     return price.toFixed(price < 0.01 ? 4 : 2);
   };
-
-  // Handle buying a Digimon
-  const handleBuy = useCallback(async () => {
-    await purchaseDigimon(tokenId, listingPrice);
-  }, [purchaseDigimon, tokenId, listingPrice]);
 
   // Navigate to the listing page
   const handleNavigateToListing = () => {
