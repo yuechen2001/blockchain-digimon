@@ -21,6 +21,17 @@ interface CustomUser extends User {
   connectedWallets?: ConnectedWallet[];
 }
 
+// Environment detection
+const isProduction = process.env.DEPLOY_ENV === 'production';
+const isDevelopment = !isProduction;
+
+const envConfig = {
+  debug: isDevelopment,
+  sessionMaxAge: isProduction ? 7 * 24 * 60 * 60 : 30 * 24 * 60 * 60,
+  cookieSecure: isProduction,
+  jwtMaxAge: isProduction ? 7 * 24 * 60 * 60 : 30 * 24 * 60 * 60,
+};
+
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -76,14 +87,13 @@ export const authOptions: AuthOptions = {
       }
     })
   ],
-  session: { 
+  session: {
     strategy: "jwt" as const,
-    maxAge: 7 * 24 * 60 * 60 // 7 days
+    maxAge: envConfig.sessionMaxAge
   },
-  // Add explicit CSRF protection
   secret: process.env.NEXTAUTH_SECRET,
-  // Force absolute URLs in Next.js 13+ to prevent URL construction errors
-  useSecureCookies: process.env.NODE_ENV === 'production',
+  debug: envConfig.debug,
+  useSecureCookies: envConfig.cookieSecure,
   cookies: {
     sessionToken: {
       name: `next-auth.session-token`,
@@ -91,7 +101,7 @@ export const authOptions: AuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: envConfig.cookieSecure
       }
     },
     csrfToken: {
@@ -100,14 +110,13 @@ export const authOptions: AuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production'
+        secure: envConfig.cookieSecure
       }
     }
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // Convert any null values to undefined for type safety
         token.id = user.id;
         token.email = user.email || undefined;
         token.name = user.name || undefined;
@@ -117,7 +126,6 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token }: { session: Session, token: JWT }) {
       if (token) {
-        // Send properties to the client, like id, email, name, and connectedWallets (especially important for wallet addresses)
         session.user = {
           ...session.user,
           id: token.id as string,
