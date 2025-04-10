@@ -1,7 +1,23 @@
-{
-  "DigimonToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "DigimonMarketplace": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-  "networkName": "localhost",
-  "deployedAt": "2025-04-05T07:11:30.809Z",
-  "environment": "development"
-}
+[
+  {
+    "DigimonToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "DigimonMarketplace": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "networkName": "localhost",
+    "deployedAt": "2025-04-05T07:11:30.809Z",
+    "environment": "development"
+  },
+  {
+    "DigimonToken": "0x96F3Ce39Ad2BfDCf92C0F6E2C2CAbF83874660Fc",
+    "DigimonMarketplace": "0x986aaa537b8cc170761FDAC6aC4fc7F9d8a20A8C",
+    "networkName": "localhost",
+    "deployedAt": "2025-04-06T07:29:34.572Z",
+    "environment": "development"
+  },
+  {
+    "DigimonToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "DigimonMarketplace": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "networkName": "localhost",
+    "deployedAt": "2025-04-07T06:52:24.705Z",
+    "environment": "development"
+  }
+]

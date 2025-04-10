@@ -1,7 +1,7 @@
 {
-  "DigimonToken": "0x5FEd6C19895C902dE4E36DcbfA32c12872A9ccD9",
-  "DigimonMarketplace": "0x22D5584fB8dA57963eCb0411DD6eCc40aeffdEe8",
-  "networkName": "mainnet",
-  "deployedAt": "2025-04-05T07:25:50.569Z",
+  "DigimonToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "DigimonMarketplace": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+  "networkName": "localhost",
+  "deployedAt": "2025-04-06T07:27:18.434Z",
   "environment": "production"
 }
