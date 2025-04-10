@@ -38,7 +38,13 @@ export async function POST(req: Request) {
     });
 
     // Return success without password
-    const { password: removedPassword, ...userWithoutPassword } = newUser;
+    const userWithoutPassword = {
+      id: newUser.id,
+      email: newUser.email,
+      username: newUser.username,
+      createdAt: newUser.createdAt,
+      updatedAt: newUser.updatedAt
+    };
     return NextResponse.json(userWithoutPassword);
   } catch (error) {
     console.error('Registration error:', error);
