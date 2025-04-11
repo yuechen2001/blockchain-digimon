@@ -68,7 +68,18 @@ The application follows a hybrid architecture:
 - Node.js 18+
 - npm or yarn
 - MetaMask or another Ethereum wallet
-- Supabase account (for production)
+
+#### Database & Authentication
+- [Supabase](https://supabase.com) account (for PostgreSQL database in production)
+- [Redis](https://redis.com) account (for caching)
+
+#### Blockchain Services
+- [Moralis](https://moralis.io) account (for blockchain API access)
+- [Etherscan](https://etherscan.io) API key (for contract verification)
+- [CoinMarketCap](https://coinmarketcap.com/api/) API key (for price feeds)
+
+#### Storage Services
+- [Pinata](https://pinata.cloud) account (for IPFS storage of NFT metadata)
 
 ### Local Development Setup
 
@@ -104,6 +115,24 @@ bash scripts/local_project_setup.sh
 
 The project uses Prisma with PostgreSQL (Supabase) for production and SQLite for development:
 
+#### Development Configuration
+
+For local development with SQLite:
+
+1. Update your `schema.prisma` file:
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = env("SQLITE_DATABASE_URL")
+}
+```
+
+2. Make sure your `.env.local` has the SQLite connection string:
+```
+SQLITE_DATABASE_URL=file:./prisma.db
+```
+
+3. Push the schema and generate the client:
 ```bash
 # Push schema to database
 npx prisma db push
@@ -111,6 +140,32 @@ npx prisma db push
 # Generate Prisma client
 npx prisma generate
 ```
+
+#### Production Configuration
+
+For production with Supabase PostgreSQL:
+
+1. Update your `schema.prisma` file:
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+```
+
+2. Configure your environment variables for Supabase connection pooling:
+```
+DATABASE_URL=postgres://username:password@pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require
+DIRECT_URL=postgres://username:password@aws-0-region.supabase.com:5432/postgres?sslmode=require
+```
+
+3. Deploy your schema to the production database:
+```bash
+npx prisma db push
+```
+
+> **Note**: The `directUrl` is required for Prisma migrations when using connection pooling with Supabase. The `DATABASE_URL` uses pgBouncer for connection pooling, while `DIRECT_URL` bypasses the connection pooler for operations that require a direct connection.
 
 ## 💼 Smart Contracts
 
