@@ -138,7 +138,8 @@ function setupDatabase() {
 }
 
 async function main() {
-  setupDatabase();
+  // Comment out for now because I manually set the database.
+  // setupDatabase(); 
   
   console.log(`\n🚀 Deploying Digimon contracts to ${environment} (${config.networkName}) environment...\n`);
 

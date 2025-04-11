@@ -1,8 +1,11 @@
 import { execSync } from 'child_process';
 import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
 
-// Import the singleton PrismaClient instance instead of creating a new one
-import { prisma } from '../lib/prisma';
+// Create a Prisma client instance directly instead of importing
+const prisma = new PrismaClient({
+  log: ['query'],
+});
 
 async function main() {
   // Load environment variables
