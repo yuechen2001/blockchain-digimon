@@ -36,7 +36,7 @@ export async function GET() {
     response.cookies.set('wallet_nonce', nonce, { 
       expires: expiresAt,
       httpOnly: true,
-      secure: process.env.NODE_ENV !== 'development',
+      secure: process.env.DEPLOY_ENV !== 'development',
       sameSite: 'strict'
     });
     

@@ -10,7 +10,7 @@ export const contractAddresses = {
 };
 
 // Log a warning if addresses are not set in production
-if (process.env.NODE_ENV === 'production' && 
+if (process.env.DEPLOY_ENV === 'production' && 
     (!contractAddresses.DigimonToken || !contractAddresses.DigimonMarketplace)) {
   console.warn(
     'Warning: Contract addresses not properly set in environment variables. ' +
