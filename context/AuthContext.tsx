@@ -138,8 +138,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error(result.error);
       }
       
-      // Redirect to the marketplace/home page after successful login
-      router.push('/marketplace');
+      // Only redirect to the marketplace/home page after successful login
+      if (result?.ok) {
+        router.push('/marketplace');
+      }
     } catch (error) {
       console.error("Login error:", error);
       setError(error instanceof Error ? error.message : 'Login failed');

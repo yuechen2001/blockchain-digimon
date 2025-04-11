@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ethers } from 'ethers';
 import { prisma } from '../../../../../lib/prisma';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../[...nextauth]/route';
+import { authOptions } from '../../auth-options';
 
 // Define wallet type for TypeScript
 interface WalletData {

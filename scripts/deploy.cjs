@@ -8,7 +8,7 @@ const { ethers, network, run } = require("hardhat");
 const fs = require("fs");
 const path = require("path");
 const deployConfig = require("../deploy-config.cjs");
-const { spawnSync, spawn } = require("child_process");
+const { spawnSync, spawn, execSync } = require("child_process");
 
 // Get the environment from command line args or default to development
 const environment = process.env.DEPLOY_ENV || "development";
@@ -125,7 +125,22 @@ function saveContractAbis(DigimonToken, DigimonMarketplace) {
   console.log(`ABIs saved to ${abisDir}`);
 }
 
+// Function to setup the database
+function setupDatabase() {
+  console.log("Setting up the database...");
+  try {
+    execSync('node scripts/setup-db.js', { stdio: 'inherit' });
+    console.log("Database setup complete.");
+  } catch (error) {
+    console.error("Error setting up the database:", error);
+    process.exit(1);
+  }
+}
+
 async function main() {
+  // Comment out for now because I manually set the database.
+  // setupDatabase(); 
+  
   console.log(`\n🚀 Deploying Digimon contracts to ${environment} (${config.networkName}) environment...\n`);
 
   // Get deployer account and network info

@@ -34,11 +34,9 @@ export const useMyListings = () => {
     try {
       setIsLoading(true);
       setError(null);
-      console.log('Fetching owned Digimons for account:', account);
 
       // Get all token IDs owned by the user
       const filter = tokenContract.filters.Transfer(null, account, null);
-      console.log('Fetching transfer events...');
       const events = await tokenContract.queryFilter(filter);
       
       // Filter events and safely extract tokenIds
@@ -51,7 +49,6 @@ export const useMyListings = () => {
       })
       .filter(id => id !== null); // Remove null values
       
-      console.log('Found token IDs:', tokenIds);
 
       // Get all listings to check if any owned tokens are listed
       const listings: any[] = [];
@@ -59,7 +56,6 @@ export const useMyListings = () => {
       try {
         // Get active listing IDs
         const listedDigimonsIds = await marketplaceContract.getActiveListingIds();
-        console.log('Active listing IDs:', listedDigimonsIds);
         
         // Check each listing to see if it belongs to the current user
         for (const listingId of listedDigimonsIds) {
@@ -84,7 +80,6 @@ export const useMyListings = () => {
               const isExpired = expiresAt <= currentTime;
               
               if (isExpired) {
-                console.log('Listing', listingId, 'is expired');
                 continue;
               }
               
@@ -98,7 +93,6 @@ export const useMyListings = () => {
                 expiresAt: expiresAt
               });
               
-              console.log('Found active listing:', listings[listings.length - 1]);
             }
           } catch (err) {
             console.error(`Error checking listing ${listingId}:`, err);
@@ -111,17 +105,14 @@ export const useMyListings = () => {
       const formattedTokens = await Promise.all(
         tokenIds.map(async (tokenId) => {
           try {
-            console.log('Processing token:', tokenId);
             // Check if we still own this token
             const currentOwner = await tokenContract.ownerOf(tokenId);
             if (currentOwner.toLowerCase() !== account.toLowerCase()) {
-              console.log('Token', tokenId, 'no longer owned by account');
               return null;
             }
 
             // Get the token URI and metadata
             const tokenURI = await tokenContract.tokenURI(tokenId).then((uri) => uri.replace('ipfs://', ''));
-            console.log('Token URI:', tokenURI);
             
             // Fetch the token metadata
             const digimonMetadata = await fetchDigimonFromIPFS(tokenURI);
@@ -151,7 +142,6 @@ export const useMyListings = () => {
 
       // Filter out null values
       const validTokens = formattedTokens.filter(token => token !== null) as OwnedDigimon[];
-      console.log('Valid tokens:', validTokens);
       
       setOwnedDigimons(validTokens);
       return validTokens;

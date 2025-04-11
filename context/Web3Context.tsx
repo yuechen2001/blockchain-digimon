@@ -62,11 +62,7 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       const marketplaceAddress = contractAddresses.DigimonMarketplace;
       const tokenAddress = contractAddresses.DigimonToken;
       
-      console.log('Loaded contract addresses:', {
-        marketplace: marketplaceAddress,
-        token: tokenAddress
-      });
-      
+
       if (!marketplaceAddress || !tokenAddress) {
         throw new Error('Contract addresses not found. Make sure to set environment variables.');
       }
@@ -74,7 +70,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       const signer = await provider.getSigner();
       
       // Initialize marketplace contract
-      console.log('Initializing marketplace contract with address:', marketplaceAddress);
       const marketplaceContract = new ethers.Contract(
         marketplaceAddress,
         DigimonMarketplaceABI,
@@ -82,7 +77,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       );
       
       // Initialize token contract
-      console.log('Initializing token contract with address:', tokenAddress);
       const digimonTokenContract = new ethers.Contract(
         tokenAddress,
         DigimonTokenABI,
@@ -93,7 +87,6 @@ export const Web3Provider: React.FC<{ children: React.ReactNode }> = ({ children
       setTokenContract(digimonTokenContract);
       setProvider(provider);
       setConnectionError(null);
-      console.log('Contracts initialized successfully');
     } catch (error) {
       console.error('Failed to initialize contracts:', error);
       setConnectionError('Failed to initialize contracts');

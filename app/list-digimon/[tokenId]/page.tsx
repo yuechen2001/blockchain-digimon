@@ -46,6 +46,30 @@ import ClientOnlyAlert from '../../../components/ClientOnlyAlert';
 import React from 'react';
 import { useListDigimon } from '../../../hooks/useListDigimon';
 
+interface DigimonMetadata {
+  name: string;
+  description?: string;
+  images?: Array<{ href: string }>;
+  levels?: Array<{ level: string }>;
+  types?: Array<{ type: string }>;
+  [key: string]: unknown; // For other potential properties
+}
+
+// Error type for better type safety
+interface ErrorWithMessage {
+  message: string;
+}
+
+// Type guard to check if an error has a message property
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === 'object' && 
+    error !== null && 
+    'message' in error && 
+    typeof (error as ErrorWithMessage).message === 'string'
+  );
+}
+
 // Define steps for the listing process
 const steps = [
   { title: 'Approval', description: 'Authorize marketplace' },
@@ -86,7 +110,7 @@ const ListingSteps = ({ activeStep, stepperBg }: { activeStep: number, stepperBg
 );
 
 // Component to display Digimon preview
-const DigimonPreview = ({ digimon, tokenId, accentBg }: { digimon: any, tokenId: string, accentBg: string }) => {
+const DigimonPreview = ({ digimon, accentBg }: { digimon: DigimonMetadata, accentBg: string }) => {
   if (!digimon) return null;
   
   return (
@@ -122,7 +146,7 @@ const DigimonPreview = ({ digimon, tokenId, accentBg }: { digimon: any, tokenId:
         <Heading size="lg" mt={{ base: 2, sm: 0 }}>{digimon.name}</Heading>
         
         <HStack wrap="wrap" justify={{ base: "center", sm: "flex-start" }}>
-          {digimon.levels?.map((level: any, index: number) => (
+          {digimon.levels?.map((level: { level: string }, index: number) => (
             <Badge 
               key={index} 
               colorScheme="purple" 
@@ -138,7 +162,7 @@ const DigimonPreview = ({ digimon, tokenId, accentBg }: { digimon: any, tokenId:
         
         {digimon?.types && digimon.types.length > 0 && (
           <HStack wrap="wrap" justify={{ base: "center", sm: "flex-start" }}>
-            {digimon.types.slice(0, 3).map((type: any, index: number) => (
+            {digimon.types.slice(0, 3).map((type: { type: string }, index: number) => (
               <Badge 
                 key={index} 
                 colorScheme="blue" 
@@ -481,12 +505,11 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       let errorMessage = "Failed to approve the marketplace. Please try again.";
       
-      if (error && typeof error === 'object' && 'message' in error) {
-        const message = (error as any).message;
-        errorMessage = typeof message === 'string' ? message : errorMessage;
+      if (isErrorWithMessage(error)) {
+        errorMessage = error.message;
         
         // If user rejected transaction, redirect to My Digimons page
         if (errorMessage.includes("user rejected")) {
@@ -554,12 +577,11 @@ export default function ListDigimon() {
         duration: 5000,
         isClosable: true,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       let errorMessage = "Failed to list your Digimon. Please try again.";
       
-      if (error && typeof error === 'object' && 'message' in error) {
-        const message = (error as any).message;
-        errorMessage = typeof message === 'string' ? message : errorMessage;
+      if (isErrorWithMessage(error)) {
+        errorMessage = error.message;
         
         // If user rejected transaction, redirect to My Digimons page
         if (errorMessage.includes("user rejected") || errorMessage.includes("Transaction cancelled by user")) {
@@ -675,7 +697,7 @@ export default function ListDigimon() {
               <ListingSteps activeStep={activeStep} stepperBg={stepperBg} />
               
               {/* Digimon preview */}
-              {digimon && <DigimonPreview digimon={digimon} tokenId={tokenId} accentBg={accentBg} />}
+              {digimon && <DigimonPreview digimon={digimon} accentBg={accentBg} />}
               
               {/* Content based on current step */}
               {isCheckingApproval ? (

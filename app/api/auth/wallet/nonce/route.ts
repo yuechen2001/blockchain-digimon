@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../[...nextauth]/route';
+import { authOptions } from '../../auth-options';
 import { randomBytes } from 'crypto';
 import { prisma } from '../../../../../lib/prisma';
 
@@ -36,7 +36,7 @@ export async function GET() {
     response.cookies.set('wallet_nonce', nonce, { 
       expires: expiresAt,
       httpOnly: true,
-      secure: process.env.NODE_ENV !== 'development',
+      secure: process.env.DEPLOY_ENV !== 'development',
       sameSite: 'strict'
     });
     

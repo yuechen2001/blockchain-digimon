@@ -25,7 +25,8 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      if (user.walletAddress) {
+      // Check if user has any connected wallets
+      if (user.connectedWallets && user.connectedWallets.length > 0) {
         router.push('/marketplace');
       } else {
         router.push('/register');
@@ -62,7 +63,7 @@ export default function Home() {
               <Button
                 size="lg"
                 colorScheme="blue"
-                onClick={() => router.push('/login')}
+                onClick={() => router.push('/register')}
               >
                 Get Started
               </Button>
