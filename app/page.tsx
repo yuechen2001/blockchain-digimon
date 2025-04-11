@@ -63,7 +63,7 @@ export default function Home() {
               <Button
                 size="lg"
                 colorScheme="blue"
-                onClick={() => router.push('/login')}
+                onClick={() => router.push('/register')}
               >
                 Get Started
               </Button>
