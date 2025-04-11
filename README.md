@@ -12,7 +12,6 @@ A full-stack NFT marketplace application for Digimon digital collectibles, built
 - [Smart Contracts](#smart-contracts)
 - [Authentication](#authentication)
 - [Database](#database)
-- [Deployment](#deployment)
 - [Screenshots](#screenshots)
 - [Contributing](#contributing)
 
@@ -216,29 +215,6 @@ For Supabase PostgreSQL, connection pooling is configured with the following par
 ```
 DATABASE_URL=postgres://user:password@pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require
 DIRECT_URL=postgres://user:password@aws-0-region.supabase.com:5432/postgres?sslmode=require
-```
-
-## 🌐 Deployment
-
-### Vercel Deployment
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Set the following environment variables:
-   - `NEXTAUTH_URL`
-   - `NEXTAUTH_SECRET`
-   - `DATABASE_URL`
-   - `DIRECT_URL`
-   - `NEXT_PUBLIC_DIGIMON_TOKEN_ADDRESS`
-   - `NEXT_PUBLIC_DIGIMON_MARKETPLACE_ADDRESS`
-   - `NEXT_PUBLIC_NETWORK_NAME`
-
-### Smart Contract Deployment
-
-Contract deployment is managed through the deployment system:
-
-```bash
-DEPLOY_ENV=production npx hardhat run scripts/deploy.cjs --network mainnet
 ```
 
 ## 📸 Screenshots
