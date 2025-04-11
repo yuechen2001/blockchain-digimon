@@ -149,7 +149,7 @@ For production with Supabase PostgreSQL:
 ```prisma
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  url       = env("POSTGRES_DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 ```
