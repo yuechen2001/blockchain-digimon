@@ -2,8 +2,6 @@
 
 A full-stack NFT marketplace application for Digimon digital collectibles, built with Next.js, Prisma, Supabase, and Ethereum smart contracts.
 
-![Blockchain Digimon Banner](docs/images/banner.png)
-
 ## 📋 Table of Contents
 
 - [Overview](#overview)
