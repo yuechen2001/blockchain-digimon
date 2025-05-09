@@ -2,19 +2,6 @@
 
 A full-stack NFT marketplace application for Digimon digital collectibles, built with Next.js, Prisma, Supabase, and Ethereum smart contracts.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Smart Contracts](#smart-contracts)
-- [Authentication](#authentication)
-- [Database](#database)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-
 ## 🌟 Overview
 
 Blockchain Digimon is a decentralized marketplace where users can mint, buy, sell, and trade Digimon NFTs. The application combines Web3 technologies with traditional web development to create a seamless user experience for digital collectible enthusiasts.
